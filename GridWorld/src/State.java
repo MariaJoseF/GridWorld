@@ -1,16 +1,11 @@
+import java.util.Vector;
 
 public class State {
 	private int position;
-	private Direction direction;
+	private Vector<Directions> directions;
 	
 	public State() {
 		super();
-	}
-
-	public State(int position, Direction direction) {
-		super();
-		this.position = position;
-		this.direction = direction;
 	}
 
 	public int getPosition() {
@@ -21,19 +16,24 @@ public class State {
 		this.position = position;
 	}
 
-	public Direction getDirection() {
-		return direction;
+	public Vector<Directions> getDirections() {
+		return directions;
 	}
 
-	public void setDirection(Direction direction) {
-		this.direction = direction;
+	public void setDirections(Vector<Directions> directions) {
+		this.directions = directions;
+	}
+
+	public State(int position, Vector<Directions> directions) {
+		super();
+		this.position = position;
+		this.directions = directions;
 	}
 
 	@Override
 	public String toString() {
-		return "State [position=" + position + ", direction=" + direction + "]";
+		return "S" + position + "" + directions + "";
 	}
-	
-	
 
+	
 }
