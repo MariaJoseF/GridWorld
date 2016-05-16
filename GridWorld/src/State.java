@@ -3,7 +3,23 @@ import java.util.Vector;
 public class State {
 	private int position;
 	private Vector<Directions> directions;
+	private int reward;
 	
+	public State(int position, Vector<Directions> directions, int reward) {
+		super();
+		this.position = position;
+		this.directions = directions;
+		this.reward = reward;
+	}
+
+	public int getReward() {
+		return reward;
+	}
+
+	public void setReward(int reward) {
+		this.reward = reward;
+	}
+
 	public State() {
 		super();
 	}
@@ -21,12 +37,6 @@ public class State {
 	}
 
 	public void setDirections(Vector<Directions> directions) {
-		this.directions = directions;
-	}
-
-	public State(int position, Vector<Directions> directions) {
-		super();
-		this.position = position;
 		this.directions = directions;
 	}
 

@@ -17,9 +17,10 @@ public class Main {
 		int LoseState = 23;// State 23 robot loses
 		int pos = 1;// begin in the 1State
 		Random randomGenerator = new Random();
-		// System.out.println("S" + pos);
+		String direction = "";
+		int randomDirection = 0;
 		while ((pos != WinState) && (pos != LoseState)) {
-			int randomDirection = randomGenerator.nextInt(5);
+			randomDirection = randomGenerator.nextInt(5);
 			// System.out.print("Generated Direction: " + randomDirection);
 			int randomOvershoot = randomGenerator.nextInt(2);
 			// System.out.println("\t Generated Overshoot: " + randomOvershoot);
@@ -44,14 +45,23 @@ public class Main {
 					nextpos = directions.get(i).getNextposition();
 
 					System.out.println("S" + pos + " " + directions.get(i).toString());
-					MPD();
+					MPD(pos);
+
 					break;
 				}
 			}
 			pos = nextpos;
+
 		}
 
-		System.out.println("S" + pos);
+		/*
+		 * String d = ""; switch (randomDirection) { case 1: d = "U"; break;
+		 * case 2: d = "D"; break; case 3: d = "L"; break; case 4: d = "R";
+		 * break; case 5: d = "N"; break; }
+		 */
+
+		System.out.println("S" + pos /* + " " + d */);
+
 		if (pos == WinState) {
 			System.out.println("_______WIN_______");
 			System.out.print("Play again");
@@ -62,9 +72,33 @@ public class Main {
 		}
 	}
 
-	private static void MPD() {//Markov Decision Process
+	private static void MPD(int state) {// Markov Decision Process
 		// TODO Auto-generated method stub
+
+		Vector<Double> V_Pi = new Vector<Double>();
+
+		V_Pi.add(V_Pi(state));
+
+	}
+
+	private static Double V_Pi(int state) {
 		
+		// TODO Auto-generated method stub
+		 Vector<Directions> direct = vec_States.get(state-1).getDirections();
+		int reward = vec_States.get(state-1).getReward();
+		double gama = 0.95;
+		double v_pi = 0.0;
+		double SumProbabilities = 0;
+		for (int i = 0; i < direct.size(); i++) {
+			double direction_probabilty = direct.get(i).getProbability();
+			int nextposition = direct.get(i).getNextposition();
+			SumProbabilities = SumProbabilities + direction_probabilty*V_Pi(nextposition);
+		}
+		
+		
+		v_pi = reward + gama * SumProbabilities;
+		
+		return v_pi;
 	}
 
 	private static void PrintStates() {
@@ -122,7 +156,7 @@ public class Main {
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
-		vec_States.add(new State(1, vec_directions));
+		vec_States.add(new State(1, vec_directions, 0));
 
 		// STATE 2 - moves up, down, left, left2x, right, right2x, nothing
 		vec_directions = new Vector<Directions>();
@@ -170,7 +204,7 @@ public class Main {
 		vec_directions.add(e);
 		e = new Directions();
 		e = new Directions();
-		vec_States.add(new State(2, vec_directions));
+		vec_States.add(new State(2, vec_directions, 0));
 
 		// STATE 3 - moves left, left2x, right, right2x, nothing
 		vec_directions = new Vector<Directions>();
@@ -205,7 +239,7 @@ public class Main {
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
-		vec_States.add(new State(3, vec_directions));
+		vec_States.add(new State(3, vec_directions, 0));
 
 		// STATE 4 - moves left, left2x, right, nothing
 		vec_directions = new Vector<Directions>();
@@ -234,7 +268,7 @@ public class Main {
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
-		vec_States.add(new State(4, vec_directions));
+		vec_States.add(new State(4, vec_directions, 0));
 
 		// STATE 5 - moves left, left2x, down, down2x, nothing
 		vec_directions = new Vector<Directions>();
@@ -269,7 +303,7 @@ public class Main {
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
-		vec_States.add(new State(5, vec_directions));
+		vec_States.add(new State(5, vec_directions, 0));
 
 		// STATE 6 - moves down, down2x, up, nothing
 		vec_directions = new Vector<Directions>();
@@ -298,7 +332,7 @@ public class Main {
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
-		vec_States.add(new State(6, vec_directions));
+		vec_States.add(new State(6, vec_directions, 0));
 
 		// STATE 7 - moves down, down2x, up, up2x, nothing
 		vec_directions = new Vector<Directions>();
@@ -332,7 +366,7 @@ public class Main {
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
-		vec_States.add(new State(7, vec_directions));
+		vec_States.add(new State(7, vec_directions, 0));
 
 		// STATE 8 - moves down, up, up2x, nothing
 		vec_directions = new Vector<Directions>();
@@ -361,7 +395,7 @@ public class Main {
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
-		vec_States.add(new State(8, vec_directions));
+		vec_States.add(new State(8, vec_directions, 0));
 
 		// STATE 9 - moves left, left2x, up, up2x, nothing
 		vec_directions = new Vector<Directions>();
@@ -396,7 +430,7 @@ public class Main {
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
-		vec_States.add(new State(9, vec_directions));
+		vec_States.add(new State(9, vec_directions, 0));
 
 		// STATE 10 - moves left, left2x, right, nothing
 		vec_directions = new Vector<Directions>();
@@ -425,7 +459,7 @@ public class Main {
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
-		vec_States.add(new State(10, vec_directions));
+		vec_States.add(new State(10, vec_directions, 0));
 
 		// STATE 11 - moves left, left2x, right, rigth2x, nothing
 		vec_directions = new Vector<Directions>();
@@ -460,7 +494,7 @@ public class Main {
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
-		vec_States.add(new State(11, vec_directions));
+		vec_States.add(new State(11, vec_directions, 0));
 
 		// STATE 12 - moves left, left2x, right, rigth2x, up, nothing
 		vec_directions = new Vector<Directions>();
@@ -501,7 +535,7 @@ public class Main {
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
-		vec_States.add(new State(12, vec_directions));
+		vec_States.add(new State(12, vec_directions, 0));
 
 		// STATE 13 - moves down, nothing
 		vec_directions = new Vector<Directions>();
@@ -518,7 +552,7 @@ public class Main {
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
-		vec_States.add(new State(13, vec_directions));
+		vec_States.add(new State(13, vec_directions, 10));
 
 		// STATE 14 - moves left, left2x, right, rigth2x, nothing
 		vec_directions = new Vector<Directions>();
@@ -553,7 +587,7 @@ public class Main {
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
-		vec_States.add(new State(14, vec_directions));
+		vec_States.add(new State(14, vec_directions, 0));
 
 		// STATE 15 - moves left, right, rigth2x, nothing
 		vec_directions = new Vector<Directions>();
@@ -582,7 +616,7 @@ public class Main {
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
-		vec_States.add(new State(15, vec_directions));
+		vec_States.add(new State(15, vec_directions, 0));
 
 		// STATE 16 - moves right, rigth2x, up, up2x, nothing
 		vec_directions = new Vector<Directions>();
@@ -617,7 +651,7 @@ public class Main {
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
-		vec_States.add(new State(16, vec_directions));
+		vec_States.add(new State(16, vec_directions, 0));
 
 		// STATE 17 - moves down, up, up2x, nothing
 		vec_directions = new Vector<Directions>();
@@ -645,7 +679,7 @@ public class Main {
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
-		vec_States.add(new State(17, vec_directions));
+		vec_States.add(new State(17, vec_directions, 0));
 
 		// STATE 18 - moves down, down2x, up, up2x, nothing
 		vec_directions = new Vector<Directions>();
@@ -679,7 +713,7 @@ public class Main {
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
-		vec_States.add(new State(18, vec_directions));
+		vec_States.add(new State(18, vec_directions, 0));
 
 		// STATE 19 - moves down, down2x, up, nothing
 		vec_directions = new Vector<Directions>();
@@ -707,7 +741,7 @@ public class Main {
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
-		vec_States.add(new State(19, vec_directions));
+		vec_States.add(new State(19, vec_directions, 0));
 
 		// STATE 20 - moves right, right2x, down, down2x, nothing
 		vec_directions = new Vector<Directions>();
@@ -741,7 +775,7 @@ public class Main {
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
-		vec_States.add(new State(20, vec_directions));
+		vec_States.add(new State(20, vec_directions, 0));
 
 		// STATE 21 - moves left, right, rigth2x, nothing
 		vec_directions = new Vector<Directions>();
@@ -769,7 +803,7 @@ public class Main {
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
-		vec_States.add(new State(21, vec_directions));
+		vec_States.add(new State(21, vec_directions, 0));
 
 		// STATE 22 - moves left, left2x, right, rigth2x, nothing
 		vec_directions = new Vector<Directions>();
@@ -803,7 +837,7 @@ public class Main {
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
-		vec_States.add(new State(22, vec_directions));
+		vec_States.add(new State(22, vec_directions, 0));
 
 		// STATE 23 - moves up, up2x, nothing
 		vec_directions = new Vector<Directions>();
@@ -825,7 +859,7 @@ public class Main {
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
-		vec_States.add(new State(23, vec_directions));
+		vec_States.add(new State(23, vec_directions, -100));
 
 	}
 
