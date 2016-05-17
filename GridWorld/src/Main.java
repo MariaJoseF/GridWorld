@@ -1,3 +1,4 @@
+import java.util.Iterator;
 import java.util.Random;
 import java.util.Vector;
 
@@ -7,8 +8,9 @@ public class Main {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		InitializeGrid();
-		PrintStates();
+		PrintStates(vec_States);
 		StartGame();
+		MPD();
 	}
 
 	private static void StartGame() {
@@ -19,85 +21,124 @@ public class Main {
 		Random randomGenerator = new Random();
 		String direction = "";
 		int randomDirection = 0;
-		while ((pos != WinState) && (pos != LoseState)) {
-			randomDirection = randomGenerator.nextInt(5);
-			// System.out.print("Generated Direction: " + randomDirection);
+		boolean finished = false;
+		while (finished != true) {
+
 			int randomOvershoot = randomGenerator.nextInt(2);
-			// System.out.println("\t Generated Overshoot: " + randomOvershoot);
-			// Jump for the next State
+
 			int nextpos = pos;
 			Vector<Directions> directions = vec_States.get(pos - 1).getDirections();
+
+			int numdirectionsavailable = directions.size() - 1;
+			randomDirection = randomGenerator.nextInt(numdirectionsavailable);
+
 			boolean isOvershoot = false;
-			for (int i = 0; i < directions.size(); i++) {
-				boolean directionExist = directions.get(i).getDirection() == randomDirection;
-				boolean overshoot;
-				if (randomOvershoot == 1) {
-					overshoot = true;
-				} else {
-					overshoot = false;
-				}
-				boolean overshootSelect = directions.get(i).isOvershoot() == overshoot;
-				if (directionExist && overshootSelect) {// check if the
-														// direction exist and
-														// if the overshoot its
-														// selected in the
-														// direction or not
-					nextpos = directions.get(i).getNextposition();
+			nextpos = directions.get(randomDirection).getNextposition();
 
-					System.out.println("S" + pos + " " + directions.get(i).toString());
-					MPD(pos);
+			System.out.println("S" + pos + " " + directions.get(randomDirection).toString());
 
-					break;
-				}
+			if (pos == WinState) {
+				System.out.println("_______WIN_______");
+			} else if (pos == LoseState) {
+				System.out.print("GAME OVER !!!!!");
 			}
+
+		//	MPD(pos);
+
+			finished = ((pos == WinState) || (pos == LoseState));
 			pos = nextpos;
 
 		}
-
-		/*
-		 * String d = ""; switch (randomDirection) { case 1: d = "U"; break;
-		 * case 2: d = "D"; break; case 3: d = "L"; break; case 4: d = "R";
-		 * break; case 5: d = "N"; break; }
-		 */
-
-		System.out.println("S" + pos /* + " " + d */);
-
-		if (pos == WinState) {
-			System.out.println("_______WIN_______");
-			System.out.print("Play again");
-			System.exit(0);
-		} else {
-			System.out.print("GAME OVER !!!!!");
-			System.exit(0);
-		}
 	}
 
-	private static void MPD(int state) {// Markov Decision Process
+	private static void MPD() {// Markov Decision Process
 		// TODO Auto-generated method stub
 
 		Vector<Double> V_Pi = new Vector<Double>();
+		Vector<Double> aux = new Vector<Double>();
+		// V_Pi.add(V_Pi(state));
 
-		V_Pi.add(V_Pi(state));
+		for (int i = 0; i < 23; i++) {// initialize all V(s) = 0;
+			V_Pi.add(0.0);
+		}
+		System.out.println("V(0)");
+		PrintStates(V_Pi);
+		
+		int teste = 1;
+		while (teste < 10) {
+			for (int i = 0; i < 23; i++) {// next iterations
+				Vector<Directions> direct = vec_States.get(i).getDirections();
+				int reward = vec_States.get(i).getReward();
+				double gama = 0.95;
+				double v_pi = 0.0;
+				double SumProbabilities = 0;
+				for (int j = 0; j < direct.size(); j++) {
+					double direction_probabilty = direct.get(j).getProbability();
+					int nextposition = direct.get(j).getNextposition() - 1;// vector
+																			// with
+																			// V(s)
+																			// starts
+																			// in
+																			// 0
+					SumProbabilities = SumProbabilities + (direction_probabilty * V_Pi.get(nextposition));
+				}
+
+				v_pi = reward + gama * SumProbabilities;
+				
+				v_pi = Math.round(v_pi * 100);
+				v_pi = v_pi/100;// 2 decimal places
+				
+				
+				aux.add(v_pi);
+			}
+
+			V_Pi= new Vector<>();// delete all values from previous iteration
+			V_Pi = aux;// add to V_Pi the values of the new iteration
+			aux = new Vector<>();// delete all values from previous iteration
+			System.out.println("");
+			System.out.println("V("+teste+")");
+			PrintStates(V_Pi);
+			
+			teste++;
+		}
 
 	}
 
-	private static Double V_Pi(int state) {
-		
+	private static void PrintStates(Vector v_Pi) {
 		// TODO Auto-generated method stub
-		 Vector<Directions> direct = vec_States.get(state-1).getDirections();
-		int reward = vec_States.get(state-1).getReward();
+		int[][] st = { { -1, -1, -1, 1, -1, -1, -1 }, { 20, 21, 22, 2, 3, 4, 5 }, { 19, -1, -1, 23, -1, -1, 6 },
+				{ 18, -1, -1, -1, -1, -1, 7 }, { 17, -1, -1, 13, -1, -1, 8 }, { 16, 15, 14, 12, 11, 10, 9 } };
+		int pos;
+
+		for (int i = 0; i < 6; i++) {
+			for (int j = 0; j < 7; j++) {
+				pos = st[i][j];
+				if (pos == -1) {
+					System.out.print(String.format("%30s", ""));
+				} else {
+					System.out.print(String.format("%30s", v_Pi.get(pos - 1).toString()));
+				}
+			}
+			System.out.println("");
+		}
+	}
+
+	private static Double V_Pi(int state) {
+
+		// TODO Auto-generated method stub
+		Vector<Directions> direct = vec_States.get(state - 1).getDirections();
+		int reward = vec_States.get(state - 1).getReward();
 		double gama = 0.95;
 		double v_pi = 0.0;
 		double SumProbabilities = 0;
 		for (int i = 0; i < direct.size(); i++) {
 			double direction_probabilty = direct.get(i).getProbability();
 			int nextposition = direct.get(i).getNextposition();
-			SumProbabilities = SumProbabilities + direction_probabilty*V_Pi(nextposition);
+			SumProbabilities = SumProbabilities + direction_probabilty * V_Pi(nextposition);
 		}
-		
-		
+
 		v_pi = reward + gama * SumProbabilities;
-		
+
 		return v_pi;
 	}
 
