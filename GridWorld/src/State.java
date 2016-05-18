@@ -3,16 +3,16 @@ import java.util.Vector;
 public class State {
 	private int position;
 	private Vector<Directions> directions;
-	private int reward;
+	private double reward;
 	
-	public State(int position, Vector<Directions> directions, int reward) {
+	public State(int position, Vector<Directions> directions, double d) {
 		super();
 		this.position = position;
 		this.directions = directions;
-		this.reward = reward;
+		this.reward = d;
 	}
 
-	public int getReward() {
+	public double getReward() {
 		return reward;
 	}
 
