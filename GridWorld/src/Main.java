@@ -10,7 +10,14 @@ public class Main {
 		InitializeGrid();
 		PrintStates();
 		// StartGame();
-		MPD(0.95);
+		//MPD(0.95);
+		
+		StartMDP();
+	}
+
+	private static void StartMDP() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private static void StartGame() {
@@ -58,7 +65,7 @@ public class Main {
 		Vector<Double> aux = new Vector<Double>();
 		// V_Pi.add(V_Pi(state));
 
-		for (int i = 0; i < 23; i++) {// initialize all V(s) = 0;
+		for (int i = 0; i < vec_States.size(); i++) {// initialize all V(s) = 0;
 			V_Pi.add(0.0);
 		}
 		System.out.println("V(0)");
@@ -187,7 +194,7 @@ public class Main {
 		int LEFT = 3;
 		int RIGHT = 4;
 		int NOTHING = 5;
-		//double prob_next = 0.75;
+		double prob_next = 0.75;
 		double prob_stay = 0.10;
 		double prob_overshoot = 0.15;
 
@@ -196,7 +203,7 @@ public class Main {
 
 		// STATE 1 - move down, down2x and nothing
 		e.setDirection(DOWN);
-		e.setProbability(0.75);
+		e.setProbability(prob_next);
 		e.setNextposition(2);
 		e.setOvershoot(false);
 		vec_directions.add(e);
@@ -218,7 +225,7 @@ public class Main {
 		// STATE 2 - moves up, down, left, left2x, right, right2x, nothing
 		vec_directions = new Vector<Directions>();
 
-		/*e.setDirection(DOWN);
+		e.setDirection(DOWN);
 		e.setProbability(prob_next);
 		e.setNextposition(23);
 		e.setOvershoot(false);
@@ -228,7 +235,7 @@ public class Main {
 		e.setProbability(prob_next);
 		e.setNextposition(1);
 		e.setOvershoot(false);
-		vec_directions.add(e);*/
+		vec_directions.add(e);
 		e = new Directions();
 		e.setDirection(LEFT);
 		e.setProbability(0.75);
@@ -236,12 +243,12 @@ public class Main {
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
-		/*e.setDirection(RIGHT);
+		e.setDirection(RIGHT);
 		e.setProbability(prob_next);
 		e.setNextposition(3);
 		e.setOvershoot(false);
 		vec_directions.add(e);
-		e = new Directions();*/
+		e = new Directions();
 		e.setDirection(LEFT);
 		e.setProbability(prob_overshoot);
 		e.setNextposition(21);
