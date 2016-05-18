@@ -10,14 +10,58 @@ public class Main {
 		InitializeGrid();
 		PrintStates();
 		// StartGame();
-		//MPD(0.95);
-		
+		// MPD(0.95);
+
 		StartMDP();
 	}
 
 	private static void StartMDP() {
 		// TODO Auto-generated method stub
-		
+		Vector<Double> V_line = new Vector<Double>();
+		for (int i = 0; i < vec_States.size(); i++) {// initialize V_line
+			V_line.add(0.0);
+		}
+		System.out.println("V(0)");
+		PrintStates(V_line);
+
+		Vector<Double> V = new Vector<Double>();
+		V = V_line;                                                                                                                                                                                                                                
+		int teration = 0;
+		while (teration < 1000) {
+			for (int i = 0; i < vec_States.size(); i++) {// initialize V_line
+				Double aux = recursiveV_line(i, V);
+				V_line.set(i, aux);
+			}
+			teration++;
+			System.out.println("");System.out.println("");
+			System.out.println("V(" + teration + ")");
+			PrintStates(V_line);
+		}
+	}
+
+	private static Double recursiveV_line(int i, Vector<Double> v) {
+		// TODO Auto-generated method stub
+		double gamma = 0.95;
+		Double aux;
+		if ((vec_States.get(i).getPosition() == 23) || (vec_States.get(i).getPosition() == 13)) {
+			aux = vec_States.get(i).getReward(); // if its the last states
+		} else {
+			double max = 0, y = 0;
+			for (int j = 0; j < vec_States.get(i).getDirections().size(); j++) {
+				double prob = vec_States.get(i).getDirections().get(j).getProbability();
+				int nextstate = vec_States.get(i).getDirections().get(j).getNextposition();
+				y = prob * v.elementAt(nextstate - 1);// positions start in 0
+
+				max = Math.max(max, y);
+			}
+			double _aux = gamma * max;
+			_aux = Math.round(_aux * 100);
+			_aux = _aux / 100;// 2 decimal places
+			aux = vec_States.get(i).getReward() + _aux;
+
+		}
+
+		return aux;
 	}
 
 	private static void StartGame() {
