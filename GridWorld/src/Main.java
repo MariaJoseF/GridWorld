@@ -10,10 +10,7 @@ public class Main {
 		InitializeGrid();
 		// begin();
 		PrintStates();
-		// Print(vec_States);
-
-		// StartGame();
-		// MPD(0.95);
+		 //Print(vec_States);
 
 		StartMDP();
 	}
@@ -34,18 +31,18 @@ public class Main {
 
 		// STATE 1 - move down, right
 		e.setDirection(DOWN);
-		e.setProbability(prob_next);
+		e.setProbability(prob_stay);
 		e.setNextposition(2);
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
 		e.setDirection(RIGHT);
-		e.setProbability(prob_stay);
+		e.setProbability(prob_next);
 		e.setNextposition(2);
 		e.setOvershoot(true);
 		vec_directions.add(e);
 		e = new Directions();
-		vec_States.add(new State(1, vec_directions, 0));
+		vec_States.add(new State(1, vec_directions, -0.04));
 		vec_directions = new Vector<Directions>();
 
 		// STATE 2 - move left, right and nothing
@@ -67,7 +64,7 @@ public class Main {
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
-		vec_States.add(new State(2, vec_directions, 0));
+		vec_States.add(new State(2, vec_directions, -0.04));
 		vec_directions = new Vector<Directions>();
 
 		// STATE 3 - move left, right down, and nothing
@@ -89,7 +86,7 @@ public class Main {
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
-		vec_States.add(new State(3, vec_directions, 0));
+		vec_States.add(new State(3, vec_directions, -0.04));
 		vec_directions = new Vector<Directions>();
 
 		// STATE 4 - move left, down
@@ -110,13 +107,13 @@ public class Main {
 
 		// STATE 5 - move up down, and nothing
 		e.setDirection(UP);
-		e.setProbability(prob_next);
+		e.setProbability(prob_stay);
 		e.setNextposition(1);
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
 		e.setDirection(DOWN);
-		e.setProbability(prob_stay);
+		e.setProbability(prob_next);
 		e.setNextposition(8);
 		e.setOvershoot(false);
 		vec_directions.add(e);
@@ -127,12 +124,12 @@ public class Main {
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
-		vec_States.add(new State(5, vec_directions, 0));
+		vec_States.add(new State(5, vec_directions, -0.04));
 		vec_directions = new Vector<Directions>();
 
 		// STATE 6 - move up down, right,and nothing
 		e.setDirection(UP);
-		e.setProbability(prob_next);
+		e.setProbability(prob_stay);
 		e.setNextposition(3);
 		e.setOvershoot(false);
 		vec_directions.add(e);
@@ -144,7 +141,7 @@ public class Main {
 		vec_directions.add(e);
 		e = new Directions();
 		e.setDirection(RIGHT);
-		e.setProbability(prob_stay);
+		e.setProbability(prob_next);
 		e.setNextposition(7);
 		e.setOvershoot(false);
 		vec_directions.add(e);
@@ -155,7 +152,7 @@ public class Main {
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
-		vec_States.add(new State(6, vec_directions, 0));
+		vec_States.add(new State(6, vec_directions, -0.04));
 		vec_directions = new Vector<Directions>();
 
 		// STATE 7 - move up down, right,and nothing
@@ -182,18 +179,18 @@ public class Main {
 
 		// STATE 8 - move up down, right,and nothing
 		e.setDirection(UP);
-		e.setProbability(prob_next);
+		e.setProbability(prob_stay);
 		e.setNextposition(5);
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
 		e.setDirection(RIGHT);
-		e.setProbability(prob_stay);
+		e.setProbability(prob_next);
 		e.setNextposition(9);
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
-		vec_States.add(new State(8, vec_directions, 0));
+		vec_States.add(new State(8, vec_directions, -0.04));
 		vec_directions = new Vector<Directions>();
 
 		// STATE 9 - move up down, right,and nothing
@@ -204,23 +201,23 @@ public class Main {
 		vec_directions.add(e);
 		e = new Directions();
 		e.setDirection(RIGHT);
-		e.setProbability(prob_stay);
+		e.setProbability(prob_next);
 		e.setNextposition(10);
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
 		e.setDirection(LEFT);
-		e.setProbability(prob_next);
+		e.setProbability(prob_stay);
 		e.setNextposition(8);
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
-		vec_States.add(new State(9, vec_directions, 0));
+		vec_States.add(new State(9, vec_directions, -0.04));
 		vec_directions = new Vector<Directions>();
 
 		// STATE 10 - move up down, right,and nothing
 		e.setDirection(UP);
-		e.setProbability(prob_stay);
+		e.setProbability(prob_next);
 		e.setNextposition(6);
 		e.setOvershoot(false);
 		vec_directions.add(e);
@@ -232,59 +229,59 @@ public class Main {
 		vec_directions.add(e);
 		e = new Directions();
 		e.setDirection(LEFT);
-		e.setProbability(prob_next);
+		e.setProbability(prob_stay);
 		e.setNextposition(9);
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
-		vec_States.add(new State(10, vec_directions, 0));
+		vec_States.add(new State(10, vec_directions, -0.04));
 		vec_directions = new Vector<Directions>();
 
 		// STATE 11 - move up down, right,and nothing
 		e.setDirection(UP);
-		e.setProbability(prob_stay);
+		e.setProbability(prob_next);
 		e.setNextposition(7);
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
 		e.setDirection(LEFT);
-		e.setProbability(prob_next);
+		e.setProbability(prob_stay);
 		e.setNextposition(10);
 		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
-		vec_States.add(new State(11, vec_directions, 0));
+		vec_States.add(new State(11, vec_directions, -0.04));
 		vec_directions = new Vector<Directions>();
 
 	}
 
 	private static void StartMDP() {
 		// TODO Auto-generated method stub
-		Vector<Double> V_line = new Vector<Double>();
+		Vector<Double> Vstar_line = new Vector<Double>();
 		for (int i = 0; i < vec_States.size(); i++) {// initialize V_line
-			V_line.add(0.0);
+			Vstar_line.add(0.0);
 		}
 		System.out.println("V(0)");
-		PrintStates(V_line);
-		// Print(V_line);
-		Vector<Double> V = new Vector<Double>();
-		V = V_line;
+		PrintStates(Vstar_line);
+		// Print(Vstar_line);
+		Vector<Double> Vstar = new Vector<Double>();
+		Vstar = Vstar_line;
 		int teration = 0;
-		while (teration < 100) {
+		while (teration < 20) {
 			for (int i = 0; i < vec_States.size(); i++) {// initialize V_line
-				Double aux = recursiveV_line(i, V);
-				V_line.set(i, aux);
+				Double aux = Vstar_line(i, Vstar);
+				Vstar_line.set(i, aux);
 			}
 			teration++;
 			System.out.println("");
 			System.out.println("");
 			System.out.println("V(" + teration + ")");
-			PrintStates(V_line);
-			// Print(V_line);
+			PrintStates(Vstar_line);
+			 //Print(Vstar_line);
 		}
 	}
 
-	private static Double recursiveV_line(int i, Vector<Double> v) {
+	private static Double Vstar_line(int i, Vector<Double> v) {
 		// TODO Auto-generated method stub
 		double gamma = 0.95;
 		Double aux;
@@ -299,11 +296,12 @@ public class Main {
 
 				max = Math.max(max, y);
 			}
-			double _aux = gamma * max;
+			
+			aux = vec_States.get(i).getReward() + gamma * max;
+			double _aux = aux;
 			_aux = Math.round(_aux * 100);
 			_aux = _aux / 100;// 2 decimal places
-			aux = vec_States.get(i).getReward() + _aux;
-
+			aux = _aux;
 		}
 
 		return aux;
