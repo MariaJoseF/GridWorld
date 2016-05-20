@@ -294,6 +294,21 @@ public class Main {
 				int nextstate = vec_States.get(i).getDirections().get(j).getNextposition();
 				y = prob * v.elementAt(nextstate - 1);// positions start in 0
 
+				/*if position:
+				 * UP
+					up , left + up, up + up, right
+					
+					LEFT
+						left,up + left,left + left, down
+						
+					RIGTH
+						right, up + right, right + right, down
+					
+					DOWN
+						down, up + down, left + down, right
+					*/
+				
+				
 				max = Math.max(max, y);
 			}
 			
