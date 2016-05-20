@@ -2,15 +2,18 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.Vector;
 
+import javax.swing.text.html.parser.ParserDelegator;
+
 public class Main {
 	static Vector<State> vec_States = new Vector<State>();
+	private static Vector<State> Policy_star;
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		InitializeGrid();
 		// begin();
 		PrintStates();
-		 //Print(vec_States);
+		// Print(vec_States);
 
 		StartMDP();
 	}
@@ -258,68 +261,116 @@ public class Main {
 	private static void StartMDP() {
 		// TODO Auto-generated method stub
 		Vector<Double> Vstar_line = new Vector<Double>();
+		Vector<String> Policy_star = new Vector<String>();
 		for (int i = 0; i < vec_States.size(); i++) {// initialize V_line
 			Vstar_line.add(0.0);
+			Policy_star.add("");
 		}
+		System.out.println("");
 		System.out.println("V(0)");
 		PrintStates(Vstar_line);
 		// Print(Vstar_line);
 		Vector<Double> Vstar = new Vector<Double>();
+
 		Vstar = Vstar_line;
 		int teration = 0;
 		while (teration < 20) {
 			for (int i = 0; i < vec_States.size(); i++) {// initialize V_line
-				Double aux = Vstar_line(i, Vstar);
-				Vstar_line.set(i, aux);
+				double[] aux = Vstar_line(i, Vstar);
+				Vstar_line.set(i, aux[0]);
+				Double d = new Double(aux[1]);
+				int aux_double = d.intValue();
+				String d_value = "";
+				switch (aux_double) {
+				case 1:
+					d_value = "U";
+					break;
+				case 2:
+					d_value = "D";
+					break;
+				case 3:
+					d_value = "L";
+					break;
+				case 4:
+					d_value = "R";
+					break;
+				case 5:
+					d_value = "N";
+					break;
+				}
+				Policy_star.set(i, d_value);
 			}
 			teration++;
 			System.out.println("");
 			System.out.println("");
 			System.out.println("V(" + teration + ")");
 			PrintStates(Vstar_line);
-			 //Print(Vstar_line);
+			// Print(Vstar_line);
 		}
+		System.out.println("");
+		PrintStates(Policy_star);
 	}
 
-	private static Double Vstar_line(int i, Vector<Double> v) {
+	private static double[] Vstar_line(int i, Vector<Double> v) {
 		// TODO Auto-generated method stub
 		double gamma = 0.95;
-		Double aux;
+		double aux;
+		int policy = 0;
 		if ((vec_States.get(i).getPosition() == 23) || (vec_States.get(i).getPosition() == 13)) {
 			aux = vec_States.get(i).getReward(); // if its the last states
 		} else {
-			double max = 0, y = 0;
+			double max = 0;
+			double maxUp = 0.0, maxDown = 0.0, maxRight = 0.0, maxLeft = 0.0, maxNothing = 0.0;
+			int left = 3, right = 4, up = 1, nothing = 5, down = 2;
 			for (int j = 0; j < vec_States.get(i).getDirections().size(); j++) {
 				double prob = vec_States.get(i).getDirections().get(j).getProbability();
 				int nextstate = vec_States.get(i).getDirections().get(j).getNextposition();
-				y = prob * v.elementAt(nextstate - 1);// positions start in 0
+				int diretion = vec_States.get(i).getDirections().get(j).getDirection();
 
-				/*if position:
-				 * UP
-					up , left + up, up + up, right
-					
-					LEFT
-						left,up + left,left + left, down
-						
-					RIGTH
-						right, up + right, right + right, down
-					
-					DOWN
-						down, up + down, left + down, right
-					*/
-				
-				
-				max = Math.max(max, y);
+				if (diretion == left) {
+					maxLeft = maxLeft + (prob * v.elementAt(nextstate - 1));
+				} else if (diretion == right) {
+					maxRight = maxRight + (prob * v.elementAt(nextstate - 1));
+				} else if (diretion == down) {
+					maxDown = maxDown + (prob * v.elementAt(nextstate - 1));
+				} else if (diretion == up) {
+					maxUp = maxUp + (prob * v.elementAt(nextstate - 1));
+				} else { // dirrection == nothing
+					maxNothing = prob * v.elementAt(nextstate - 1);
+				}
 			}
-			
+			max = Math.max(max, maxLeft);
+			max = Math.max(max, maxRight);
+			max = Math.max(max, maxUp);
+			max = Math.max(max, maxDown);
+			max = Math.max(max, maxNothing);
+
+			if (max == maxLeft
+					|| (maxLeft < 0.0 && maxDown == 0.0 && maxUp == 0.0 && maxNothing == 0.0 && maxRight == 0.0)) {
+				policy = left;
+			} else if (max == maxRight
+					|| (maxLeft == 0.0 && maxDown == 0.0 && maxUp == 0.0 && maxNothing == 0.0 && maxRight < 0.0)) {
+				policy = right;
+			} else if (max == maxDown
+					|| (maxLeft == 0.0 && maxDown < 0.0 && maxUp == 0.0 && maxNothing == 0.0 && maxRight == 0.0)) {
+				policy = down;
+			} else if (max == maxUp
+					|| (maxLeft == 0.0 && maxDown == 0.0 && maxUp < 0.0 && maxNothing == 0.0 && maxRight == 0.0)) {
+				policy = up;
+			} else if (max == maxNothing
+					|| (maxLeft == 0.0 && maxDown == 0.0 && maxUp == 0.0 && maxNothing < 0.0 && maxRight == 0.0)) {
+				policy = nothing;
+			}
+
 			aux = vec_States.get(i).getReward() + gamma * max;
 			double _aux = aux;
 			_aux = Math.round(_aux * 100);
 			_aux = _aux / 100;// 2 decimal places
 			aux = _aux;
 		}
+		double a[] = { aux, policy };
 
-		return aux;
+		return a;
 	}
 
 	private static void StartGame() {
