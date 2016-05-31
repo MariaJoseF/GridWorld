@@ -294,8 +294,11 @@ public class Main {
 				case 4:
 					d_value = "R";
 					break;
-				case 5:
-					d_value = "N";
+				case -100:
+					d_value = "-100";
+					break;
+				case 10:
+					d_value = "10";
 					break;
 				}
 				Policy_star.set(i, d_value);
@@ -316,11 +319,17 @@ public class Main {
 		double gamma = 0.95;
 		double aux;
 		int policy = 0;
+
 		if ((vec_States.get(i).getPosition() == 23) || (vec_States.get(i).getPosition() == 13)) {
 			aux = vec_States.get(i).getReward(); // if its the last states
+			if (vec_States.get(i).getPosition() == 23) {
+				policy = -100;
+			} else {
+				policy = 10;
+			}
 		} else {
 			double max = 0;
-			double maxUp = 0.0, maxDown = 0.0, maxRight = 0.0, maxLeft = 0.0, maxNothing = 0.0;
+			double maxUp = 0.0, maxDown = 0.0, maxRight = 0.0, maxLeft = 0.0/*, maxNothing = 0.0*/;
 			int left = 3, right = 4, up = 1, nothing = 5, down = 2;
 			for (int j = 0; j < vec_States.get(i).getDirections().size(); j++) {
 				double prob = vec_States.get(i).getDirections().get(j).getProbability();
@@ -335,32 +344,28 @@ public class Main {
 					maxDown = maxDown + (prob * v.elementAt(nextstate - 1));
 				} else if (diretion == up) {
 					maxUp = maxUp + (prob * v.elementAt(nextstate - 1));
-				} else { // dirrection == nothing
-					maxNothing = prob * v.elementAt(nextstate - 1);
+				} else { // direction == nothing
+					maxLeft = maxLeft + (prob * v.elementAt(nextstate - 1));
+					maxRight = maxRight + (prob * v.elementAt(nextstate - 1));
+					maxDown = maxDown + (prob * v.elementAt(nextstate - 1));
+					maxUp = maxUp + (prob * v.elementAt(nextstate - 1));
 				}
 			}
+
 			max = Math.max(max, maxLeft);
 			max = Math.max(max, maxRight);
 			max = Math.max(max, maxUp);
 			max = Math.max(max, maxDown);
-			max = Math.max(max, maxNothing);
 
-			if (max == maxLeft
-					|| (maxLeft < 0.0 && maxDown == 0.0 && maxUp == 0.0 && maxNothing == 0.0 && maxRight == 0.0)) {
+			if ((max == maxLeft && max != 0) || (max == 0.0 && maxLeft < 0.0)) {
 				policy = left;
-			} else if (max == maxRight
-					|| (maxLeft == 0.0 && maxDown == 0.0 && maxUp == 0.0 && maxNothing == 0.0 && maxRight < 0.0)) {
+			} else if ((max == maxRight && max != 0) || (max == 0.0 && maxRight < 0.0)) {
 				policy = right;
-			} else if (max == maxDown
-					|| (maxLeft == 0.0 && maxDown < 0.0 && maxUp == 0.0 && maxNothing == 0.0 && maxRight == 0.0)) {
+			} else if ((max == maxDown && max != 0) || (max == 0.0 && maxDown < 0.0)) {
 				policy = down;
-			} else if (max == maxUp
-					|| (maxLeft == 0.0 && maxDown == 0.0 && maxUp < 0.0 && maxNothing == 0.0 && maxRight == 0.0)) {
+			} else if ((max == maxUp && max != 0) || (max == 0.0 && maxDown < 0.0)) {
 				policy = up;
-			} else if (max == maxNothing
-					|| (maxLeft == 0.0 && maxDown == 0.0 && maxUp == 0.0 && maxNothing < 0.0 && maxRight == 0.0)) {
-				policy = nothing;
-			}
+			} 
 
 			aux = vec_States.get(i).getReward() + gamma * max;
 			double _aux = aux;
@@ -435,11 +440,11 @@ public class Main {
 				for (int j = 0; j < direct.size(); j++) {
 					double direction_probabilty = direct.get(j).getProbability();
 					int nextposition = direct.get(j).getNextposition() - 1;// vector
-																			// with
-																			// V(s)
-																			// starts
-																			// in
-																			// 0
+					// with
+					// V(s)
+					// starts
+					// in
+					// 0
 					SumProbabilities = SumProbabilities + (direction_probabilty * V_Pi.get(nextposition));
 				}
 
