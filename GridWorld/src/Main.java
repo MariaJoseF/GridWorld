@@ -19,6 +19,22 @@ public class Main {
 		//Print(vec_States);
 
 		StartMDP();
+		
+		StartQ_Learning();
+	}
+
+	private static void StartQ_Learning() {
+		// TODO Auto-generated method stub
+		
+		/*1. initialize Q(s,a) to small random values for all states and actions
+		2.observe state s
+		3.pick random action from actions and do it
+		4.observe next state, s' and reward r
+		5.Q(s,a)<-- (i-alpha)Q(s,a) + alpha (r + gamma) max Q(s',a');
+		6. Go to step 2*/
+		
+		
+		
 	}
 
 	private static void begin() {
@@ -321,7 +337,7 @@ public class Main {
 		System.out.println("");
 		PrintStates(Policy_star);
 		//Print(Policy_star);
-/*		System.out.println("");
+		/*		System.out.println("");
 		System.out.println("Gamma = " + gamma);*/
 	}
 
@@ -333,13 +349,7 @@ public class Main {
 		aux = vec_States.get(i).getReward(); // if its the last states
 
 		if ((aux == LoseReward) || (aux == GoalReward)) {
-
-
-			/*if (aux == LoseReward) {//negative reward
-			 */				policy = (int) aux;
-			 /*} else {
-				policy = 10;
-			}*/
+			policy = (int) aux;
 		} else {
 			double max = 0;
 			double maxUp = 0.0, maxDown = 0.0, maxRight = 0.0, maxLeft = 0.0/*, maxNothing = 0.0*/;
@@ -392,7 +402,7 @@ public class Main {
 	}
 
 
-	private static void PrintStates(Vector v_Pi) {
+	public static void PrintStates(Vector v_Pi) {
 		// TODO Auto-generated method stub
 		int[][] st = { { -1, -1, -1, 1, -1, -1, -1 }, { 20, 21, 22, 2, 3, 4, 5 }, { 19, -1, -1, 23, -1, -1, 6 },
 				{ 18, -1, -1, -1, -1, -1, 7 }, { 17, -1, -1, 13, -1, -1, 8 }, { 16, 15, 14, 12, 11, 10, 9 } };
@@ -410,8 +420,8 @@ public class Main {
 			System.out.println("");
 		}
 	}
-	
-	private static void PrintStates() {
+
+	public static void PrintStates() {
 		// TODO Auto-generated method stub
 		int[][] st = { { -1, -1, -1, 1, -1, -1, -1 }, { 20, 21, 22, 2, 3, 4, 5 }, { 19, -1, -1, 23, -1, -1, 6 },
 				{ 18, -1, -1, -1, -1, -1, 7 }, { 17, -1, -1, 13, -1, -1, 8 }, { 16, 15, 14, 12, 11, 10, 9 } };

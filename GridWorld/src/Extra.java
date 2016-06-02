@@ -17,7 +17,7 @@ public class Extra {
 			int randomOvershoot = randomGenerator.nextInt(2);
 
 			int nextpos = pos;
-			Vector<Directions> directions = vec_States.get(pos - 1).getDirections();
+			Vector<Directions> directions = Main.vec_States.get(pos - 1).getDirections();
 
 			int numdirectionsavailable = directions.size() - 1;
 			randomDirection = randomGenerator.nextInt(numdirectionsavailable);
@@ -48,17 +48,17 @@ public class Extra {
 		Vector<Double> aux = new Vector<Double>();
 		// V_Pi.add(V_Pi(state));
 
-		for (int i = 0; i < vec_States.size(); i++) {// initialize all V(s) = 0;
+		for (int i = 0; i < Main.vec_States.size(); i++) {// initialize all V(s) = 0;
 			V_Pi.add(0.0);
 		}
 		System.out.println("V(0)");
-		PrintStates(V_Pi);
+		Main.PrintStates(V_Pi);
 
 		int teste = 1;
 		while (teste < 10) {
-			for (int i = 0; i < vec_States.size(); i++) {// next iterations
-				Vector<Directions> direct = vec_States.get(i).getDirections();
-				double reward = vec_States.get(i).getReward();
+			for (int i = 0; i < Main.vec_States.size(); i++) {// next iterations
+				Vector<Directions> direct = Main.vec_States.get(i).getDirections();
+				double reward = Main.vec_States.get(i).getReward();
 				double gama = valueGama;
 				double v_pi = 0.0;
 				double SumProbabilities = 0;
@@ -86,7 +86,7 @@ public class Extra {
 			aux = new Vector<>();// delete all values from previous iteration
 			System.out.println("");
 			System.out.println("V(" + teste + ")");
-			PrintStates(V_Pi);
+			Main.PrintStates(V_Pi);
 			teste++;
 		}
 
@@ -98,8 +98,8 @@ public class Extra {
 	private static Double V_Pi(int state) {
 
 		// TODO Auto-generated method stub
-		Vector<Directions> direct = vec_States.get(state - 1).getDirections();
-		double reward = vec_States.get(state - 1).getReward();
+		Vector<Directions> direct = Main.vec_States.get(state - 1).getDirections();
+		double reward = Main.vec_States.get(state - 1).getReward();
 		double gama = 0.95;
 		double v_pi = 0.0;
 		double SumProbabilities = 0;
