@@ -50,8 +50,8 @@ public class Main {
 		int actual_state;
 		Random ran = new Random();
 		for (int i = iterations; i > 0; i--) {
-			System.out.println("");
-			System.out.println("Iteration: " + i);
+			System.out.println(""); 
+			System.out.println("Iteration: " + (i-iterations + 1));
 			boolean reachGoal = true;
 			if (i==iterations) {
 				actual_state = 0;//actual state = 0 -> state 1
@@ -59,12 +59,20 @@ public class Main {
 				actual_state = ran.nextInt(vec_States.size()) -1;
 			}
 			while (reachGoal) {//reach the goal state for this episode
-				if (actual_state == 23) {
+				if (actual_state == 13 -1) {
 					reachGoal = false;
 				} 
 				Vector<Directions> dir_st = vec_States.get(actual_state).getDirections();
 
-				int random_direction = ran.nextInt(dir_st.size()) - 1;
+				int random_direction;
+				try {
+					random_direction = ran.nextInt(dir_st.size()) - 1;
+				} catch (java.lang.ArrayIndexOutOfBoundsException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}finally {
+					random_direction = 0;
+				}
 
 				Directions action = dir_st.get(random_direction);
 
@@ -74,7 +82,7 @@ public class Main {
 				double[] aux = Search(vec_States.get(actual_state), action, Qlearning);
 				int index = (int) aux[0];
 				Qlearning.set(index, new_valQsa);
-				actual_state = new_valQsa.getNext();
+				
 				String d_value = "";
 				switch (action.getDirection()) {
 				case 1:
@@ -90,7 +98,8 @@ public class Main {
 					d_value = "R";
 					break;
 				}
-				System.out.println("_______ Q("+actual_state+","+ d_value+") = " + new_valQsa.getQL());
+				System.out.println("_______ Q("+(actual_state +1)+","+ d_value+") = " + new_valQsa.getQL());
+				actual_state = new_valQsa.getNext() -1;
 			}
 			System.out.println("");
 
@@ -105,15 +114,16 @@ public class Main {
 		double[] aux_ = Search(state, ac, qlearning);
 		QLearning actual_LearnedQsa  = qlearning.get((int) aux_[0]);//first position its the qlearning index and the second its the Q(s'.a') for that index
 		int  nextstate = 0;
-		double action = ac.getDirection();
+		String action = ac.toString();
 		double r = state.getReward();
 		Vector<Directions> Next_Directions;
 
-		state = vec_States.get(st-1);
+		//state = vec_States.get(st);
 		Vector<Directions> dir = state.getDirections();
 		for (int i = 0; i < dir.size(); i++) {
-			if (action == dir.get(i).getDirection()) {
-				nextstate = dir.get(i).getNextposition();
+			if (action.compareTo(dir.get(i).toString()) == 0) {
+				nextstate = dir.get(i).getNextposition() - 1;
+				break;
 			}
 		}
 
@@ -134,21 +144,22 @@ public class Main {
 
 
 
-		new_LearnedQsa = new QLearning(st,ac,nextstate - 1,QSA);
+		new_LearnedQsa = new QLearning(st+1,ac,nextstate + 1,QSA);
 		return new_LearnedQsa;
 	}
 
 	private static double[]  Search(State state, Directions action, Vector<QLearning> qlearning) {
-		double[] QL_next = null;
+		double QL_next []= null;
 		// TODO Auto-generated method stub
 		for (int i = 0; i < qlearning.size(); i++) {
 			Directions ac = qlearning.get(i).action;
 			int st = qlearning.get(i).state;
 			int next = qlearning.get(i).next;
 
-			if (ac.getDirection() == action.getDirection() && st == state.getPosition() && next == action.getNextposition()) {
+			if (ac.toString() == action.toString() && st == state.getPosition() && next == action.getNextposition()) {
 				double aux [] = {i,qlearning.get(i).getQL()};
 				QL_next = aux;
+				break;
 			}
 
 		}
