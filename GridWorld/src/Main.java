@@ -67,6 +67,17 @@ public class Main {
 				int random_direction;
 				try {
 					random_direction = ran.nextInt(dir_st.size()) - 1;
+					
+					   System.out.println("Next double value: " + ran.nextDouble());
+
+					   implement here the greedy policy
+					   < >epsilon  random action from possible actions
+					   >= 1- espilon  choose the maximum action from Q(s,a)
+					   
+					   
+					   
+					   
+					   
 				} catch (java.lang.ArrayIndexOutOfBoundsException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
