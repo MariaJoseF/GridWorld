@@ -1,9 +1,9 @@
 
 public class QLearning {
-	int state;
-	Directions action;
-	double QL;
-	int next;
+	private int state;
+	private Directions action;
+	private double QL;
+	private int next;
 	
 	public int getNext() {
 		return next;
@@ -39,7 +39,7 @@ public class QLearning {
 	}
 	@Override
 	public String toString() {
-		return "QLearning [state=" + state + ", action=" + action + ", QL=" + QL + ", next=" + next + "]";
+		return "[" + action + "] " + QL;
 	}
 
 

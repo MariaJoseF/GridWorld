@@ -1,6 +1,7 @@
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Vector;
+import java.util.stream.DoubleStream;
 
 import javax.swing.text.html.parser.ParserDelegator;
 
@@ -14,122 +15,175 @@ public class Main {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		InitializeGrid();
-		//begin();
+		// begin();
 		PrintStates();
-		//Print(vec_States);
+		// Print(vec_States);
 
 		//StartMDP();
 
-		StartQ_Learning(5,0.2);
+		 StartQ_Learning(5000, 0.05, 0.2);
 	}
 
-	private static void StartQ_Learning(int iterations, double alpha) {
+	private static void StartQ_Learning(int iterations, double alpha, double epsilon) {
 		// TODO Auto-generated method stub
 
-		/*1. initialize Q(s,a) to small random values for all states and actions
-		2.observe state s
-		3.pick random action from actions and do it
-		4.observe next state, s' and reward r
-		5.Q(s,a)<-- (i-alpha)Q(s,a) + alpha (r + gamma) max Q(s',a');
-		6. Go to step 2*/
+		/*
+		 * 1. initialize Q(s,a) to small random values for all states and
+		 * actions 2.observe state s 3.pick random action from actions and do it
+		 * 4.observe next state, s' and reward r 5.Q(s,a)<-- (i-alpha)Q(s,a) +
+		 * alpha (r + gamma) max Q(s',a'); 6. Go to step 2
+		 */
 
 		Vector<QLearning> Qlearning = new Vector<QLearning>();
+		Vector<Integer> vecVisitedStates = new Vector<Integer>();
+
+		Vector<Policy> vecPolicy = new Vector<Policy>();
 
 		for (int i = 0; i < vec_States.size(); i++) {// initialize Q(s,a)
 			Vector<Directions> directions = vec_States.get(i).getDirections();
 			int s = vec_States.get(i).getPosition();
 			for (int j = 0; j < directions.size(); j++) {
-				QLearning Q = new QLearning(s, directions.get(j),directions.get(j).getNextposition(), 0.0);
+				QLearning Q = new QLearning(s, directions.get(j), directions.get(j).getNextposition(), 0.0);
 				Qlearning.add(Q);
 			}
+			vecPolicy.add(new Policy(s, -1));
 		}
 
-		/* EPISODE - corresponds to explore each state until reach the goal. 
-		A episode consist of a agent move from the initial state to the goal state. 
-		Each time the agent reaches the goal state it starts a new episode*/
-		int actual_state;
+		System.out.println("");
+		System.out.println("Initial Policy");
+
+		PrintStates(vecPolicy);
+
+		/*
+		 * EPISODE - corresponds to explore each state until reach the goal. A
+		 * episode consist of a agent move from the initial state to the goal
+		 * state. Each time the agent reaches the goal state it starts a new
+		 * episode
+		 */
+		int actual_state = 0;
 		Random ran = new Random();
-		for (int i = iterations; i > 0; i--) {
-			System.out.println(""); 
-			System.out.println("Iteration: " + (i-iterations + 1));
+		for (int i = 1; i <= iterations; i++) {
+			System.out.println("");
+			System.out.println(">>>>>>>>>>>>>>>>>  Iteration: " + i + "  >>>>>>>>>>>>>>>>>");
 			boolean reachGoal = true;
-			if (i==iterations) {
-				actual_state = 0;//actual state = 0 -> state 1
-			} else {
-				actual_state = ran.nextInt(vec_States.size()) -1;
+			vecVisitedStates = new Vector<Integer>();
+			if (i == 1) {
+				actual_state = 0;// actual state = 0 -> state 1
 			}
-			while (reachGoal) {//reach the goal state for this episode
-				if (actual_state == 13 -1) {
+			while (reachGoal) {// reach the goal state for this episode
+				if (actual_state == 13 - 1) {
 					reachGoal = false;
-				} 
+				}
 				Vector<Directions> dir_st = vec_States.get(actual_state).getDirections();
 
-				int random_direction;
-				try {
-					random_direction = ran.nextInt(dir_st.size()) - 1;
-					
-					   System.out.println("Next double value: " + ran.nextDouble());
-
-					   implement here the greedy policy
-					   < >epsilon  random action from possible actions
-					   >= 1- espilon  choose the maximum action from Q(s,a)
-					   
-					   
-					   
-					   
-					   
-				} catch (java.lang.ArrayIndexOutOfBoundsException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}finally {
-					random_direction = 0;
+				if (!vecVisitedStates.contains(actual_state)) {
+					vecVisitedStates.add(actual_state);
 				}
 
-				Directions action = dir_st.get(random_direction);
+				int direction = -1;
+				double max_action = 0;
+				double prob_rand = ran.nextDouble();
 
-
-
+				if (prob_rand < epsilon) {
+					try {
+						direction = ran.nextInt(dir_st.size() - 1);
+						System.out.println("random direction = " + direction);
+					} catch (java.lang.ArrayIndexOutOfBoundsException e) {
+						// TODO Auto-generated catch block
+						direction = 0;
+					}
+				} else {
+					int aux = 0;
+					Directions aux_direction = null;
+					for (int j = 0; j < Qlearning.size(); j++) {
+						if (Qlearning.get(j).getState() == actual_state + 1) {
+							if (aux == 0) {
+								max_action = Qlearning.get(j).getQL();
+								aux++;
+							} else {
+								max_action = Math.max(max_action, Qlearning.get(j).getQL());
+							}
+							if (max_action == Qlearning.get(j).getQL()) {
+								aux_direction = Qlearning.get(j).getAction();
+								// System.out.println("direction= " +
+								// aux_direction.getDirection());
+							}
+						}
+					}
+					for (int j = 0; j < dir_st.size(); j++) {
+						if (dir_st.get(j) == aux_direction) {
+							vecPolicy.set(actual_state, new Policy(actual_state + 1, dir_st.get(j).getDirection()));
+							direction = j;
+						}
+					}
+				}
+				Directions action = dir_st.get(direction);
 				QLearning new_valQsa = Q_State_Action(alpha, actual_state, action, Qlearning);
 				double[] aux = Search(vec_States.get(actual_state), action, Qlearning);
 				int index = (int) aux[0];
 				Qlearning.set(index, new_valQsa);
-				
-				String d_value = "";
-				switch (action.getDirection()) {
-				case 1:
-					d_value = "U";
-					break;
-				case 2:
-					d_value = "D";
-					break;
-				case 3:
-					d_value = "L";
-					break;
-				case 4:
-					d_value = "R";
-					break;
+				System.out.println(
+						"_______ Q(" + (actual_state + 1) + "," + action.toString() + ") = " + new_valQsa.getQL());
+				actual_state = new_valQsa.getNext() - 1;
+
+				if (!reachGoal) {
+					try {
+						actual_state = vecVisitedStates.get(ran.nextInt(vecVisitedStates.size() - 1));
+					} catch (java.lang.ArrayIndexOutOfBoundsException e) {
+						// TODO Auto-generated catch block
+						actual_state = 0;
+					}
 				}
-				System.out.println("_______ Q("+(actual_state +1)+","+ d_value+") = " + new_valQsa.getQL());
-				actual_state = new_valQsa.getNext() -1;
 			}
 			System.out.println("");
-
+			System.out.println("Updated Policy");
+			PrintStates(vecPolicy);
+			System.out.println("");
 		}
+
+		System.out.println("");
+		System.out.println("Q-function values");
+
+		QlearningOptimalPolicy(Qlearning, vecPolicy);
+
+	}
+
+	private static void QlearningOptimalPolicy(Vector<QLearning> qlearning, Vector<Policy> vecPolicy) {
+		// TODO Auto-generated method stub
+		Vector<QLearning> aux = new Vector<QLearning>();
+
+		for (int j = 0; j < vecPolicy.size(); j++) {
+			Policy policy = vecPolicy.get(j);
+
+			for (int i = 0; i < qlearning.size(); i++) {
+				QLearning ql = qlearning.get(i);
+
+				if (policy.getState() == ql.getState() && policy.getDirection() == ql.getAction().getDirection()) {
+					aux.add(ql);
+					break;
+				}
+			}
+		}
+
+		PrintStates(aux);
 
 	}
 
 	private static QLearning Q_State_Action(double alpha, int st, Directions ac, Vector<QLearning> qlearning) {
 		// TODO Auto-generated method stub
 		QLearning new_LearnedQsa = null;
-		State state = vec_States.get(st),next_st;
+		State state = vec_States.get(st), next_st;
 		double[] aux_ = Search(state, ac, qlearning);
-		QLearning actual_LearnedQsa  = qlearning.get((int) aux_[0]);//first position its the qlearning index and the second its the Q(s'.a') for that index
-		int  nextstate = 0;
+		QLearning actual_LearnedQsa = qlearning.get((int) aux_[0]);
+
+		// first position its the qlearning index and the second its the
+		// Q(s'.a') for that index
+		int nextstate = 0;
 		String action = ac.toString();
 		double r = state.getReward();
 		Vector<Directions> Next_Directions;
 
-		//state = vec_States.get(st);
+		// state = vec_States.get(st);
 		Vector<Directions> dir = state.getDirections();
 		for (int i = 0; i < dir.size(); i++) {
 			if (action.compareTo(dir.get(i).toString()) == 0) {
@@ -142,33 +196,38 @@ public class Main {
 
 		Next_Directions = next_st.getDirections();
 
-
 		double maxQnext = 0;
 		for (int j = 0; j < Next_Directions.size(); j++) {
-			double aux [] = Search(next_st,Next_Directions.get(j), qlearning);
-			maxQnext = Math.max(maxQnext, aux[1]);//first position its the qlearning index and the second its the Q(s'.a') for that index
+			double aux[] = Search(next_st, Next_Directions.get(j), qlearning);
+			maxQnext = Math.max(maxQnext, aux[1]);// first position its the
+													// qlearning index and the
+													// second its the Q(s'.a')
+													// for that index
 		}
 
-		//Qsa = (1-alpha)Qsa + alpha (r+gamma*maxQs'a')
+		// Qsa = (1-alpha)Qsa + alpha (r+gamma*maxQs'a')
 		double QSA = 0.0;
-		QSA = (1- alpha) * actual_LearnedQsa.getQL() + alpha * (r + (gamma * maxQnext));
+		QSA = (1 - alpha) * actual_LearnedQsa.getQL() + alpha * (r + (gamma * maxQnext));
 
+		double _aux = QSA;
+		_aux = Math.round(_aux * 100);
+		_aux = _aux / 100;// 2 decimal places
+		QSA = _aux;
 
-
-		new_LearnedQsa = new QLearning(st+1,ac,nextstate + 1,QSA);
+		new_LearnedQsa = new QLearning(st + 1, ac, nextstate + 1, QSA);
 		return new_LearnedQsa;
 	}
 
-	private static double[]  Search(State state, Directions action, Vector<QLearning> qlearning) {
-		double QL_next []= null;
+	private static double[] Search(State state, Directions action, Vector<QLearning> qlearning) {
+		double QL_next[] = null;
 		// TODO Auto-generated method stub
 		for (int i = 0; i < qlearning.size(); i++) {
-			Directions ac = qlearning.get(i).action;
-			int st = qlearning.get(i).state;
-			int next = qlearning.get(i).next;
+			Directions ac = qlearning.get(i).getAction();
+			int st = qlearning.get(i).getState();
+			int next = qlearning.get(i).getNext();
 
 			if (ac.toString() == action.toString() && st == state.getPosition() && next == action.getNextposition()) {
-				double aux [] = {i,qlearning.get(i).getQL()};
+				double aux[] = { i, qlearning.get(i).getQL() };
 				QL_next = aux;
 				break;
 			}
@@ -432,7 +491,7 @@ public class Main {
 		System.out.println("");
 		System.out.println("V(0)");
 		PrintStates(Vstar_line);
-		//Print(Vstar_line);
+		// Print(Vstar_line);
 		Vector<Double> Vstar = new Vector<Double>();
 
 		Vstar = Vstar_line;
@@ -460,9 +519,9 @@ public class Main {
 				}
 
 				if (d_value == "" && aux_double == LoseReward) {
-					d_value = "" +LoseReward +"";
-				}else if (d_value == "" && aux_double == GoalReward) {
-					d_value = "" +GoalReward +"";
+					d_value = "" + LoseReward + "";
+				} else if (d_value == "" && aux_double == GoalReward) {
+					d_value = "" + GoalReward + "";
 				}
 
 				Policy_star.set(i, d_value);
@@ -472,16 +531,18 @@ public class Main {
 			System.out.println("");
 			System.out.println("V(" + iteration + ")");
 			PrintStates(Vstar_line);
-			//Print(Vstar_line);
+			// Print(Vstar_line);
 		}
 		System.out.println("");
 		PrintStates(Policy_star);
-		//Print(Policy_star);
-		/*		System.out.println("");
-		System.out.println("Gamma = " + gamma);*/
+		// Print(Policy_star);
+		/*
+		 * System.out.println(""); System.out.println("Gamma = " + gamma);
+		 */
 	}
 
-	private static double[] Vstar_line(int i, Vector<Double> v) {//implementing Q(s,a) = Reward + Gamma * Q(s'a') 
+	private static double[] Vstar_line(int i, Vector<Double> v) {
+		// implementing Q(s,a) = Reward + Gamma * Q(s'a')
 		// TODO Auto-generated method stub
 
 		double aux;
@@ -492,7 +553,8 @@ public class Main {
 			policy = (int) aux;
 		} else {
 			double max = 0;
-			double maxUp = 0.0, maxDown = 0.0, maxRight = 0.0, maxLeft = 0.0/*, maxNothing = 0.0*/;
+			double maxUp = 0.0, maxDown = 0.0, maxRight = 0.0,
+					maxLeft = 0.0/* , maxNothing = 0.0 */;
 			int left = 3, right = 4, up = 1, nothing = 5, down = 2;
 			for (int j = 0; j < vec_States.get(i).getDirections().size(); j++) {
 				double prob = vec_States.get(i).getDirections().get(j).getProbability();
@@ -513,7 +575,7 @@ public class Main {
 					maxDown = maxDown + (prob * v.elementAt(nextstate - 1));
 					maxUp = maxUp + (prob * v.elementAt(nextstate - 1));
 				}
-			}
+			} //// Não sei se é preciso comentar este bloco de if
 
 			max = Math.max(max, maxLeft);
 			max = Math.max(max, maxRight);
@@ -528,7 +590,7 @@ public class Main {
 				policy = down;
 			} else if ((max == maxUp && max != 0) || (max == 0.0 && maxDown < 0.0)) {
 				policy = up;
-			} 
+			}
 
 			aux = vec_States.get(i).getReward() + gamma * max;
 			double _aux = aux;
@@ -541,7 +603,6 @@ public class Main {
 		return a;
 	}
 
-
 	public static void PrintStates(Vector v_Pi) {
 		// TODO Auto-generated method stub
 		int[][] st = { { -1, -1, -1, 1, -1, -1, -1 }, { 20, 21, 22, 2, 3, 4, 5 }, { 19, -1, -1, 23, -1, -1, 6 },
@@ -552,9 +613,9 @@ public class Main {
 			for (int j = 0; j < 7; j++) {
 				pos = st[i][j];
 				if (pos == -1) {
-					System.out.print(String.format("%10s", ""));
+					System.out.print(String.format("%15s", ""));
 				} else {
-					System.out.print(String.format("%10s", v_Pi.get(pos - 1).toString()));
+					System.out.print(String.format("%15s", v_Pi.get(pos - 1).toString()));
 				}
 			}
 			System.out.println("");
@@ -597,7 +658,6 @@ public class Main {
 			System.out.println("");
 		}
 	}
-
 
 	@SuppressWarnings("null")
 	private static void InitializeGrid() {
@@ -1007,9 +1067,9 @@ public class Main {
 		vec_directions.add(e);
 		e = new Directions();
 		e.setDirection(UP);
-		e.setProbability(prob_overshoot);
+		e.setProbability(prob_next);
 		e.setNextposition(13);
-		e.setOvershoot(true);
+		e.setOvershoot(false);
 		vec_directions.add(e);
 		e = new Directions();
 		e.setDirection(NOTHING);
