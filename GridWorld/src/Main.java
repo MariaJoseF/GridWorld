@@ -10,6 +10,7 @@ public class Main {
 	private static Vector<State> Policy_star;
 
 	static long startTime;
+
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		startTime = System.currentTimeMillis();
@@ -19,18 +20,16 @@ public class Main {
 		PrintStates();
 		// Print(vec_States);
 
-		//StartMDP(5);
+		// StartMDP(5);
 
-		//	StartQ_Learning(5000, 0.05, 0.2);
+		// StartQ_Learning(5000, 0.05, 0.2);
 
 		SARSA(5000, 0.05, 0.2);
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = stopTime - startTime;
-		String aux = String.format("%d min, %d sec", 
-				TimeUnit.MILLISECONDS.toMinutes(elapsedTime),
-				TimeUnit.MILLISECONDS.toSeconds(elapsedTime) - 
-				TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(elapsedTime))
-				);
+		String aux = String.format("%d min, %d sec", TimeUnit.MILLISECONDS.toMinutes(elapsedTime),
+				TimeUnit.MILLISECONDS.toSeconds(elapsedTime)
+						- TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(elapsedTime)));
 		System.out.println("");
 		System.out.println("Execution time: " + aux);
 	}
@@ -52,16 +51,18 @@ public class Main {
 
 		for (int i = 0; i < vec_States.size(); i++) {// initialize Q(s,a)
 			Vector<Directions> directions = vec_States.get(i).getDirections();
-			int s = vec_States.get(i).getPosition()
+			int s = vec_States.get(i).getPosition();
 
 			Directions aux;
-			for (int j = 0; j < directions.size(); j++) 
+			for (int j = 0; j < directions.size(); j++) {
 				aux = directions.get(j);
-				if (directions.contains(o)) {//preciso meter mais do que uma direcção dentro do mesmo vector e ver se esta já existe ou não
-					QLearning Q = new QLearning(s, directions.get(j), directions.get(j).getNextposition(), 0.0);
-					SARSA_Q.add(Q);
-				}
-				
+				// if (directions.contains(o)) {//preciso meter mais do que uma
+				// direcção dentro do mesmo vector e ver se esta já existe ou
+				// não
+				QLearning Q = new QLearning(s, directions.get(j), directions.get(j).getNextposition(), 0.0);
+				SARSA_Q.add(Q);
+				// }
+
 			}
 			vecPolicy_SARSA.add(new Policy(s, -1));
 		}
@@ -80,10 +81,7 @@ public class Main {
 		int actual_state = 0;
 		Random ran = new Random();
 		for (int i = 1; i <= iterations; i++) {
-			if (i == 4500) {
-				System.out.println();
-			}
-			
+
 			System.out.println("");
 			System.out.println(">>>>>>>>>>>>>>>>>  Iteration: " + i + "  >>>>>>>>>>>>>>>>>");
 			boolean reachGoal = true;
@@ -230,7 +228,8 @@ public class Main {
 
 	}
 
-	private static QLearning SARSA_State_Action(double alpha, int st, Directions ac,Vector<QLearning> SARSA_Q, Vector<Policy> vecPolicy) {
+	private static QLearning SARSA_State_Action(double alpha, int st, Directions ac, Vector<QLearning> SARSA_Q,
+			Vector<Policy> vecPolicy) {
 		// TODO Auto-generated method stub
 		QLearning new_LearnedQsa = null;
 		State state = vec_States.get(st), next_st;
@@ -241,13 +240,13 @@ public class Main {
 
 		int nextstate = 0;
 		String action = ac.toString();
-		//double r = state.getReward();
-		Vector<Directions> Next_Directions;
+		// double r = state.getReward();
+	//	Vector<Directions> Next_Directions;
 
 		Vector<Directions> dir = state.getDirections();
 		for (int i = 0; i < dir.size(); i++) {
 			if (action.compareTo(dir.get(i).toString()) == 0) {
-				nextstate = dir.get(i).getNextposition() - 1;
+				nextstate = dir.get(i).getNextposition() -1;
 				break;
 			}
 		}
@@ -257,22 +256,21 @@ public class Main {
 		double r = next_st.getReward();
 
 		int action_policy = 0;
-		for (int i = 0; i < vecPolicy.size(); i++) {
-			if (vecPolicy.get(i).getState() == nextstate) {
+		for (int i =  nextstate; i < vecPolicy.size(); i++) {
+			//if (vecPolicy.get(i).getState() == next_st.getPosition()) {
 				action_policy = vecPolicy.get(i).getDirection();
 				break;
-			}
+			//}
 		}
 
-		double QSA = 0.0, QSlineA_policy= 0.0;
+		double QSA = 0.0, QSlineA_policy = 0.0;
 
-		for (int i = 0; i < SARSA_Q.size(); i++) {
-			if (SARSA_Q.get(i).getState() == nextstate && SARSA_Q.get(i).getAction().getDirection() == action_policy) {
+		for (int i = nextstate; i < SARSA_Q.size(); i++) {
+			if (SARSA_Q.get(i).getState() == next_st.getPosition() && (SARSA_Q.get(i).getAction().getDirection() == action_policy || action_policy == -1)) {
 				QSlineA_policy = SARSA_Q.get(i).getQL();
 				break;
 			}
 		}
-
 
 		// Qsa = (1-alpha)*Qsa + alpha (r+gamma*Qs'policy(s')
 		QSA = (1 - alpha) * actual_LearnedQsa.getQL() + alpha * (r + (gamma * QSlineA_policy));
@@ -325,6 +323,7 @@ public class Main {
 				if (dir_st.get(j) == aux_direction) {
 					Policy.set(actual_state, new Policy(actual_state + 1, dir_st.get(j).getDirection()));
 					direction = j;
+					break;
 				}
 			}
 		}
@@ -366,7 +365,7 @@ public class Main {
 		// Q(s'.a') for that index
 		int nextstate = 0;
 		String action = ac.toString();
-		//double r = state.getReward();
+		// double r = state.getReward();
 		Vector<Directions> Next_Directions;
 
 		// state = vec_States.get(st);
@@ -684,7 +683,6 @@ public class Main {
 
 		Vstar = Vstar_line;
 
-
 		for (int k = 1; k <= iteration; k++) {
 			for (int i = 0; i < vec_States.size(); i++) {// initialize V_line
 				double[] aux = Vstar_line(i, Vstar);
@@ -715,7 +713,7 @@ public class Main {
 
 				Policy_star.set(i, d_value);
 			}
-			
+
 			System.out.println("");
 			System.out.println("");
 			System.out.println("V(" + iteration + ")");
@@ -764,11 +762,10 @@ public class Main {
 					maxDown = maxDown + (prob * v.elementAt(nextstate - 1));
 					maxUp = maxUp + (prob * v.elementAt(nextstate - 1));
 				}
-			} 
+			}
 
-		//	Calculates the Utility not the Q*(s,a)
-			
-			
+			// Calculates the Utility not the Q*(s,a)
+
 			max = Math.max(max, maxLeft);
 			max = Math.max(max, maxRight);
 			max = Math.max(max, maxUp);
