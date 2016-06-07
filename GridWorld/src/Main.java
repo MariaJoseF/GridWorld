@@ -5,18 +5,16 @@ import java.util.Random;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 
-
 public class Main {
 	private static double LoseReward = 0;
 	private static double GoalReward = 0;
 	private static double gamma = 0;
 	static Vector<State> vec_States = new Vector<State>();
 	private static Vector<State> Policy_star;
-	
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		
+
 		InitializeGrid();
 		// begin();
 		PrintStates();
@@ -24,18 +22,16 @@ public class Main {
 
 		// StartMDP(5);
 
-		// 
+		//
 		gamma = 0.95;
 		int iterations = 5000;
 		double alpha = 0.05;
 		double epsilon = 0.2;
 
 		new SARSA_Class(vec_States, gamma, iterations, alpha, epsilon);
-		//new Qlearning_class(vec_States, gamma, iterations, alpha, epsilon);	
-		
+		// new Qlearning_class(vec_States, gamma, iterations, alpha, epsilon);
+
 	}
-
-
 
 	private static void begin() {
 		// TODO Auto-generated method stub
