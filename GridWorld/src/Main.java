@@ -1,36 +1,28 @@
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.util.Random;
 import java.util.Vector;
-import java.util.concurrent.TimeUnit;
 
 public class Main {
 	private static double LoseReward = 0;
 	private static double GoalReward = 0;
 	private static double gamma = 0;
 	static Vector<State> vec_States = new Vector<State>();
-	private static Vector<State> Policy_star;
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
 		InitializeGrid();
-		// begin();
 		PrintStates();
-		// Print(vec_States);
 
-		// StartMDP(5);
-
-		//
 		gamma = 0.95;
-		int iterations = 5000;
+		int iterations = 5;
 		double alpha = 0.05;
 		double epsilon = 0.2;
 
-		new SARSA_Class(vec_States, gamma, iterations, alpha, epsilon);
+		StartMDP(iterations);
+
+		// new SARSA_Class(vec_States, gamma, iterations, alpha, epsilon);
 		// new Qlearning_class(vec_States, gamma, iterations, alpha, epsilon);
 
+		// new UCB();
 	}
 
 	private static void begin() {
@@ -283,12 +275,15 @@ public class Main {
 		Vector<String> Policy_star = new Vector<String>();
 		for (int i = 0; i < vec_States.size(); i++) {// initialize V_line
 			Vstar_line.add(0.0);
-			Policy_star.add("");
+			Policy_star.add("-");
 		}
 		System.out.println("");
 		System.out.println("V(0)");
 		PrintStates(Vstar_line);
 		// Print(Vstar_line);
+
+		System.out.println("");
+		PrintStates(Policy_star);
 		Vector<Double> Vstar = new Vector<Double>();
 
 		Vstar = Vstar_line;
@@ -313,12 +308,9 @@ public class Main {
 				case 4:
 					d_value = "R";
 					break;
-				}
-
-				if (d_value == "" && aux_double == LoseReward) {
-					d_value = "" + LoseReward + "";
-				} else if (d_value == "" && aux_double == GoalReward) {
-					d_value = "" + GoalReward + "";
+				case 0:
+					d_value = "-";
+					break;
 				}
 
 				Policy_star.set(i, d_value);
@@ -326,12 +318,14 @@ public class Main {
 
 			System.out.println("");
 			System.out.println("");
-			System.out.println("V(" + iteration + ")");
+			System.out.println("V(" + k + ")");
 			PrintStates(Vstar_line);
 			// Print(Vstar_line);
+			System.out.println("");
+			PrintStates(Policy_star);
 		}
-		System.out.println("");
-		PrintStates(Policy_star);
+		// System.out.println("");
+		// PrintStates(Policy_star);
 		// Print(Policy_star);
 		/*
 		 * System.out.println(""); System.out.println("Gamma = " + gamma);
@@ -342,61 +336,104 @@ public class Main {
 		// implementing Q(s,a) = Reward + Gamma * Q(s'a')
 		// TODO Auto-generated method stub
 
-		double aux;
+		double max = 0;
+		double maxUp = 0.0, maxDown = 0.0, maxRight = 0.0, maxLeft = 0.0;
+		int left = 3, right = 4, up = 1, down = 2;
 		int policy = 0;
-		aux = vec_States.get(i).getReward(); // if its the last states
+		boolean rightexist = false;
+		boolean leftexist = false;
+		boolean downexist = false;
+		boolean upexist = false;
+		int aux_max = 0;
+		double aux = 0;
+		for (int j = 0; j < vec_States.get(i).getDirections().size(); j++) {
+			double prob = vec_States.get(i).getDirections().get(j).getProbability();
+			int nextstate = vec_States.get(i).getDirections().get(j).getNextposition();
+			int diretion = vec_States.get(i).getDirections().get(j).getDirection();
 
-		if ((aux == LoseReward) || (aux == GoalReward)) {
-			policy = (int) aux;
-		} else {
-			double max = 0;
-			double maxUp = 0.0, maxDown = 0.0, maxRight = 0.0,
-					maxLeft = 0.0/* , maxNothing = 0.0 */;
-			int left = 3, right = 4, up = 1, nothing = 5, down = 2;
-			for (int j = 0; j < vec_States.get(i).getDirections().size(); j++) {
-				double prob = vec_States.get(i).getDirections().get(j).getProbability();
-				int nextstate = vec_States.get(i).getDirections().get(j).getNextposition();
-				int diretion = vec_States.get(i).getDirections().get(j).getDirection();
+			if (aux_max == 0 && (diretion == left || diretion == right || diretion == down || diretion == up)) {
+				max = prob * v.elementAt(nextstate - 1);
+				aux_max++;
+			}
 
-				if (diretion == left) {
-					maxLeft = maxLeft + (prob * v.elementAt(nextstate - 1));
-				} else if (diretion == right) {
-					maxRight = maxRight + (prob * v.elementAt(nextstate - 1));
-				} else if (diretion == down) {
-					maxDown = maxDown + (prob * v.elementAt(nextstate - 1));
-				} else if (diretion == up) {
+			if (diretion == left) {
+				maxLeft = maxLeft + (prob * v.elementAt(nextstate - 1));
+				leftexist = true;
+			} else if (diretion == right) {
+				maxRight = maxRight + (prob * v.elementAt(nextstate - 1));
+				rightexist = true;
+			} else if (diretion == down) {
+				maxDown = maxDown + (prob * v.elementAt(nextstate - 1));
+				downexist = true;
+			} else if (diretion == up) {
+				maxUp = maxUp + (prob * v.elementAt(nextstate - 1));
+				upexist = true;
+			} else { // direction == nothing
+				if (upexist) {
 					maxUp = maxUp + (prob * v.elementAt(nextstate - 1));
-				} else { // direction == nothing
-					maxLeft = maxLeft + (prob * v.elementAt(nextstate - 1));
-					maxRight = maxRight + (prob * v.elementAt(nextstate - 1));
+				} else if (downexist) {
 					maxDown = maxDown + (prob * v.elementAt(nextstate - 1));
-					maxUp = maxUp + (prob * v.elementAt(nextstate - 1));
+				} else if (rightexist) {
+					maxRight = maxRight + (prob * v.elementAt(nextstate - 1));
+				} else if (leftexist) {
+					maxLeft = maxLeft + (prob * v.elementAt(nextstate - 1));
 				}
 			}
 
-			// Calculates the Utility not the Q*(s,a)
+		}
 
+		if (leftexist) {
+			maxLeft = vec_States.get(i).getReward() + gamma * maxLeft;
 			max = Math.max(max, maxLeft);
+		}
+		if (rightexist) {
+			maxRight = vec_States.get(i).getReward() + gamma * maxRight;
 			max = Math.max(max, maxRight);
+		}
+		if (upexist) {
+			maxUp = vec_States.get(i).getReward() + gamma * maxUp;
 			max = Math.max(max, maxUp);
+		}
+		if (downexist) {
+			maxDown = vec_States.get(i).getReward() + gamma * maxDown;
 			max = Math.max(max, maxDown);
+		}
 
-			if ((max == maxLeft && max != 0) || (max == 0.0 && maxLeft < 0.0)) {
-				policy = left;
-			} else if ((max == maxRight && max != 0) || (max == 0.0 && maxRight < 0.0)) {
-				policy = right;
-			} else if ((max == maxDown && max != 0) || (max == 0.0 && maxDown < 0.0)) {
+		if (((max == maxLeft && max != 0)
+				|| (max == 0.0 && maxLeft < 0.0)) /* && leftexist */) {
+			policy = left;
+		} else if (((max == maxRight && max != 0) || (max == 0.0 && maxRight < 0.0)) /* && rightexist */) {
+			policy = right;
+		} else if (((max == maxDown && max != 0)
+				|| (max == 0.0 && maxDown < 0.0)) /* && downexist */) {
+			policy = down;
+		} else if (((max == maxUp && max != 0) || (max == 0.0 && maxDown < 0.0)) /* && upexist */) {
+			policy = up;
+		} else {
+
+		}
+
+		if (policy == 0) {
+			System.out.println("Policy ZERO " + vec_States.get(i));
+
+			if (maxDown != 0) {
 				policy = down;
-			} else if ((max == maxUp && max != 0) || (max == 0.0 && maxDown < 0.0)) {
+			} else if (maxLeft != 0) {
+				policy = left;
+			} else if (maxRight != 0) {
+				policy = right;
+			} else if (maxUp != 0) {
 				policy = up;
 			}
-
-			aux = vec_States.get(i).getReward() + gamma * max;
-			double _aux = aux;
-			_aux = Math.round(_aux * 100);
-			_aux = _aux / 100;// 2 decimal places
-			aux = _aux;
 		}
+
+		aux = max;
+
+		double _aux = aux;
+		_aux = Math.round(_aux * 100);
+		_aux = _aux / 100;// 2 decimal places
+		aux = _aux;
+
 		double a[] = { aux, policy };
 
 		return a;

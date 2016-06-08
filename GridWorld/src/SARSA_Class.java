@@ -256,7 +256,6 @@ public class SARSA_Class {
 
 			}
 		}
-
 	}
 
 	public static void PrintStates(Vector v_Pi) {
