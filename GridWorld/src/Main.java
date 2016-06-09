@@ -13,11 +13,11 @@ public class Main {
 		PrintStates();
 
 		gamma = 0.95;
-		int iterations = 5;
+		int iterations = 1;
 		double alpha = 0.05;
 		double epsilon = 0.2;
 
-		StartMDP(iterations);
+	//	StartMDP(iterations);
 
 		// new SARSA_Class(vec_States, gamma, iterations, alpha, epsilon);
 		// new Qlearning_class(vec_States, gamma, iterations, alpha, epsilon);
@@ -468,9 +468,9 @@ public class Main {
 			for (int j = 0; j < 7; j++) {
 				pos = st[i][j];
 				if (pos == -1) {
-					System.out.print(String.format("%30s", ""));
+					System.out.print(String.format("%25s", ""));
 				} else {
-					System.out.print(String.format("%30s", vec_States.get(pos - 1).toString()));
+					System.out.print(String.format("%25s", vec_States.get(pos - 1).toString()));
 				}
 			}
 			System.out.println("");
