@@ -3,7 +3,6 @@ import java.util.Vector;
 public class Main {
 	private static double LoseReward = 0;
 	private static double GoalReward = 0;
-	private static double gamma = 0;
 	static Vector<State> vec_States = new Vector<State>();
 
 	public static void main(String[] args) {
@@ -12,264 +11,130 @@ public class Main {
 		InitializeGrid();
 		PrintStates();
 
-		gamma = 0.95;
-		int iterations = 1;
+		double gamma = 0.95;
+		int iterations = 100;
 		double alpha = 0.05;
 		double epsilon = 0.2;
 
-	//	StartMDP(iterations);
-
-		// new SARSA_Class(vec_States, gamma, iterations, alpha, epsilon);
+		// StartMDP(iterations);
+		new MDP(vec_States, iterations, gamma);
+	//	 new SARSA_Class(vec_States, gamma, iterations, alpha, epsilon);
 		// new Qlearning_class(vec_States, gamma, iterations, alpha, epsilon);
 
 		// new UCB();
 	}
 
-	private static void begin() {
-		// TODO Auto-generated method stub
-		// Possible directions
-		int UP = 1;
-		int DOWN = 2;
-		int LEFT = 3;
-		int RIGHT = 4;
-		int NOTHING = 5;
-		double prob_next = 0.8;
-		double prob_stay = 0.10;
-
-		LoseReward = -1;
-		GoalReward = 1;
-		gamma = 0.99;
-
-		Vector<Directions> vec_directions = new Vector<Directions>();
-		Directions e = new Directions();
-
-		// STATE 1 - move down, right
-		e.setDirection(DOWN);
-		e.setProbability(prob_stay);
-		e.setNextposition(2);
-		e.setOvershoot(false);
-		vec_directions.add(e);
-		e = new Directions();
-		e.setDirection(RIGHT);
-		e.setProbability(prob_next);
-		e.setNextposition(2);
-		e.setOvershoot(true);
-		vec_directions.add(e);
-		e = new Directions();
-		vec_States.add(new State(1, vec_directions, -0.02));
-		vec_directions = new Vector<Directions>();
-
-		// STATE 2 - move left, right and nothing
-		e.setDirection(LEFT);
-		e.setProbability(prob_stay);
-		e.setNextposition(1);
-		e.setOvershoot(false);
-		vec_directions.add(e);
-		e = new Directions();
-		e.setDirection(RIGHT);
-		e.setProbability(prob_next);
-		e.setNextposition(3);
-		e.setOvershoot(false);
-		vec_directions.add(e);
-		e = new Directions();
-		e.setDirection(NOTHING);
-		e.setProbability(prob_stay);
-		e.setNextposition(2);
-		e.setOvershoot(false);
-		vec_directions.add(e);
-		e = new Directions();
-		vec_States.add(new State(2, vec_directions, -0.02));
-		vec_directions = new Vector<Directions>();
-
-		// STATE 3 - move left, right down, and nothing
-		e.setDirection(LEFT);
-		e.setProbability(prob_stay);
-		e.setNextposition(2);
-		e.setOvershoot(false);
-		vec_directions.add(e);
-		e = new Directions();
-		e.setDirection(RIGHT);
-		e.setProbability(prob_next);
-		e.setNextposition(4);
-		e.setOvershoot(false);
-		vec_directions.add(e);
-		e = new Directions();
-		e.setDirection(DOWN);
-		e.setProbability(prob_stay);
-		e.setNextposition(2);
-		e.setOvershoot(false);
-		vec_directions.add(e);
-		e = new Directions();
-		vec_States.add(new State(3, vec_directions, -0.02));
-		vec_directions = new Vector<Directions>();
-
-		// STATE 4 - move left, down
-		e.setDirection(LEFT);
-		e.setProbability(prob_next);
-		e.setNextposition(3);
-		e.setOvershoot(false);
-		vec_directions.add(e);
-		e = new Directions();
-		e.setDirection(DOWN);
-		e.setProbability(prob_stay);
-		e.setNextposition(7);
-		e.setOvershoot(false);
-		vec_directions.add(e);
-		e = new Directions();
-		vec_States.add(new State(4, vec_directions, GoalReward));
-		vec_directions = new Vector<Directions>();
-
-		// STATE 5 - move up down, and nothing
-		e.setDirection(UP);
-		e.setProbability(prob_stay);
-		e.setNextposition(1);
-		e.setOvershoot(false);
-		vec_directions.add(e);
-		e = new Directions();
-		e.setDirection(DOWN);
-		e.setProbability(prob_next);
-		e.setNextposition(8);
-		e.setOvershoot(false);
-		vec_directions.add(e);
-		e = new Directions();
-		e.setDirection(NOTHING);
-		e.setProbability(prob_stay);
-		e.setNextposition(5);
-		e.setOvershoot(false);
-		vec_directions.add(e);
-		e = new Directions();
-		vec_States.add(new State(5, vec_directions, -0.02));
-		vec_directions = new Vector<Directions>();
-
-		// STATE 6 - move up down, right,and nothing
-		e.setDirection(UP);
-		e.setProbability(prob_stay);
-		e.setNextposition(3);
-		e.setOvershoot(false);
-		vec_directions.add(e);
-		e = new Directions();
-		e.setDirection(DOWN);
-		e.setProbability(prob_stay);
-		e.setNextposition(10);
-		e.setOvershoot(false);
-		vec_directions.add(e);
-		e = new Directions();
-		e.setDirection(RIGHT);
-		e.setProbability(prob_next);
-		e.setNextposition(7);
-		e.setOvershoot(false);
-		vec_directions.add(e);
-		e = new Directions();
-		e.setDirection(NOTHING);
-		e.setProbability(prob_stay);
-		e.setNextposition(6);
-		e.setOvershoot(false);
-		vec_directions.add(e);
-		e = new Directions();
-		vec_States.add(new State(6, vec_directions, -0.02));
-		vec_directions = new Vector<Directions>();
-
-		// STATE 7 - move up down, right,and nothing
-		e.setDirection(UP);
-		e.setProbability(prob_next);
-		e.setNextposition(4);
-		e.setOvershoot(false);
-		vec_directions.add(e);
-		e = new Directions();
-		e.setDirection(DOWN);
-		e.setProbability(prob_stay);
-		e.setNextposition(11);
-		e.setOvershoot(false);
-		vec_directions.add(e);
-		e = new Directions();
-		e.setDirection(LEFT);
-		e.setProbability(prob_stay);
-		e.setNextposition(6);
-		e.setOvershoot(false);
-		vec_directions.add(e);
-		e = new Directions();
-		vec_States.add(new State(7, vec_directions, LoseReward));
-		vec_directions = new Vector<Directions>();
-
-		// STATE 8 - move up down, right,and nothing
-		e.setDirection(UP);
-		e.setProbability(prob_stay);
-		e.setNextposition(5);
-		e.setOvershoot(false);
-		vec_directions.add(e);
-		e = new Directions();
-		e.setDirection(RIGHT);
-		e.setProbability(prob_next);
-		e.setNextposition(9);
-		e.setOvershoot(false);
-		vec_directions.add(e);
-		e = new Directions();
-		vec_States.add(new State(8, vec_directions, -0.02));
-		vec_directions = new Vector<Directions>();
-
-		// STATE 9 - move up down, right,and nothing
-		e.setDirection(NOTHING);
-		e.setProbability(prob_stay);
-		e.setNextposition(9);
-		e.setOvershoot(false);
-		vec_directions.add(e);
-		e = new Directions();
-		e.setDirection(RIGHT);
-		e.setProbability(prob_next);
-		e.setNextposition(10);
-		e.setOvershoot(false);
-		vec_directions.add(e);
-		e = new Directions();
-		e.setDirection(LEFT);
-		e.setProbability(prob_stay);
-		e.setNextposition(8);
-		e.setOvershoot(false);
-		vec_directions.add(e);
-		e = new Directions();
-		vec_States.add(new State(9, vec_directions, -0.02));
-		vec_directions = new Vector<Directions>();
-
-		// STATE 10 - move up down, right,and nothing
-		e.setDirection(UP);
-		e.setProbability(prob_next);
-		e.setNextposition(6);
-		e.setOvershoot(false);
-		vec_directions.add(e);
-		e = new Directions();
-		e.setDirection(RIGHT);
-		e.setProbability(prob_stay);
-		e.setNextposition(11);
-		e.setOvershoot(false);
-		vec_directions.add(e);
-		e = new Directions();
-		e.setDirection(LEFT);
-		e.setProbability(prob_stay);
-		e.setNextposition(9);
-		e.setOvershoot(false);
-		vec_directions.add(e);
-		e = new Directions();
-		vec_States.add(new State(10, vec_directions, -0.02));
-		vec_directions = new Vector<Directions>();
-
-		// STATE 11 - move up down, right,and nothing
-		e.setDirection(UP);
-		e.setProbability(prob_next);
-		e.setNextposition(7);
-		e.setOvershoot(false);
-		vec_directions.add(e);
-		e = new Directions();
-		e.setDirection(LEFT);
-		e.setProbability(prob_stay);
-		e.setNextposition(10);
-		e.setOvershoot(false);
-		vec_directions.add(e);
-		e = new Directions();
-		vec_States.add(new State(11, vec_directions, -0.02));
-		vec_directions = new Vector<Directions>();
-
-	}
-
-	private static void StartMDP(int iteration) {
+	/*
+	 * private static void begin() { // TODO Auto-generated method stub //
+	 * Possible directions int UP = 1; int DOWN = 2; int LEFT = 3; int RIGHT =
+	 * 4; int NOTHING = 5; double prob_next = 0.8; double prob_stay = 0.10;
+	 * 
+	 * LoseReward = -1; GoalReward = 1; gamma = 0.99;
+	 * 
+	 * Vector<Directions> vec_directions = new Vector<Directions>(); Directions
+	 * e = new Directions();
+	 * 
+	 * // STATE 1 - move down, right e.setDirection(DOWN);
+	 * e.setProbability(prob_stay); e.setNextposition(2); e.setOvershoot(false);
+	 * vec_directions.add(e); e = new Directions(); e.setDirection(RIGHT);
+	 * e.setProbability(prob_next); e.setNextposition(2); e.setOvershoot(true);
+	 * vec_directions.add(e); e = new Directions(); vec_States.add(new State(1,
+	 * vec_directions, -0.02)); vec_directions = new Vector<Directions>();
+	 * 
+	 * // STATE 2 - move left, right and nothing e.setDirection(LEFT);
+	 * e.setProbability(prob_stay); e.setNextposition(1); e.setOvershoot(false);
+	 * vec_directions.add(e); e = new Directions(); e.setDirection(RIGHT);
+	 * e.setProbability(prob_next); e.setNextposition(3); e.setOvershoot(false);
+	 * vec_directions.add(e); e = new Directions(); e.setDirection(NOTHING);
+	 * e.setProbability(prob_stay); e.setNextposition(2); e.setOvershoot(false);
+	 * vec_directions.add(e); e = new Directions(); vec_States.add(new State(2,
+	 * vec_directions, -0.02)); vec_directions = new Vector<Directions>();
+	 * 
+	 * // STATE 3 - move left, right down, and nothing e.setDirection(LEFT);
+	 * e.setProbability(prob_stay); e.setNextposition(2); e.setOvershoot(false);
+	 * vec_directions.add(e); e = new Directions(); e.setDirection(RIGHT);
+	 * e.setProbability(prob_next); e.setNextposition(4); e.setOvershoot(false);
+	 * vec_directions.add(e); e = new Directions(); e.setDirection(DOWN);
+	 * e.setProbability(prob_stay); e.setNextposition(2); e.setOvershoot(false);
+	 * vec_directions.add(e); e = new Directions(); vec_States.add(new State(3,
+	 * vec_directions, -0.02)); vec_directions = new Vector<Directions>();
+	 * 
+	 * // STATE 4 - move left, down e.setDirection(LEFT);
+	 * e.setProbability(prob_next); e.setNextposition(3); e.setOvershoot(false);
+	 * vec_directions.add(e); e = new Directions(); e.setDirection(DOWN);
+	 * e.setProbability(prob_stay); e.setNextposition(7); e.setOvershoot(false);
+	 * vec_directions.add(e); e = new Directions(); vec_States.add(new State(4,
+	 * vec_directions, GoalReward)); vec_directions = new Vector<Directions>();
+	 * 
+	 * // STATE 5 - move up down, and nothing e.setDirection(UP);
+	 * e.setProbability(prob_stay); e.setNextposition(1); e.setOvershoot(false);
+	 * vec_directions.add(e); e = new Directions(); e.setDirection(DOWN);
+	 * e.setProbability(prob_next); e.setNextposition(8); e.setOvershoot(false);
+	 * vec_directions.add(e); e = new Directions(); e.setDirection(NOTHING);
+	 * e.setProbability(prob_stay); e.setNextposition(5); e.setOvershoot(false);
+	 * vec_directions.add(e); e = new Directions(); vec_States.add(new State(5,
+	 * vec_directions, -0.02)); vec_directions = new Vector<Directions>();
+	 * 
+	 * // STATE 6 - move up down, right,and nothing e.setDirection(UP);
+	 * e.setProbability(prob_stay); e.setNextposition(3); e.setOvershoot(false);
+	 * vec_directions.add(e); e = new Directions(); e.setDirection(DOWN);
+	 * e.setProbability(prob_stay); e.setNextposition(10);
+	 * e.setOvershoot(false); vec_directions.add(e); e = new Directions();
+	 * e.setDirection(RIGHT); e.setProbability(prob_next); e.setNextposition(7);
+	 * e.setOvershoot(false); vec_directions.add(e); e = new Directions();
+	 * e.setDirection(NOTHING); e.setProbability(prob_stay);
+	 * e.setNextposition(6); e.setOvershoot(false); vec_directions.add(e); e =
+	 * new Directions(); vec_States.add(new State(6, vec_directions, -0.02));
+	 * vec_directions = new Vector<Directions>();
+	 * 
+	 * // STATE 7 - move up down, right,and nothing e.setDirection(UP);
+	 * e.setProbability(prob_next); e.setNextposition(4); e.setOvershoot(false);
+	 * vec_directions.add(e); e = new Directions(); e.setDirection(DOWN);
+	 * e.setProbability(prob_stay); e.setNextposition(11);
+	 * e.setOvershoot(false); vec_directions.add(e); e = new Directions();
+	 * e.setDirection(LEFT); e.setProbability(prob_stay); e.setNextposition(6);
+	 * e.setOvershoot(false); vec_directions.add(e); e = new Directions();
+	 * vec_States.add(new State(7, vec_directions, LoseReward)); vec_directions
+	 * = new Vector<Directions>();
+	 * 
+	 * // STATE 8 - move up down, right,and nothing e.setDirection(UP);
+	 * e.setProbability(prob_stay); e.setNextposition(5); e.setOvershoot(false);
+	 * vec_directions.add(e); e = new Directions(); e.setDirection(RIGHT);
+	 * e.setProbability(prob_next); e.setNextposition(9); e.setOvershoot(false);
+	 * vec_directions.add(e); e = new Directions(); vec_States.add(new State(8,
+	 * vec_directions, -0.02)); vec_directions = new Vector<Directions>();
+	 * 
+	 * // STATE 9 - move up down, right,and nothing e.setDirection(NOTHING);
+	 * e.setProbability(prob_stay); e.setNextposition(9); e.setOvershoot(false);
+	 * vec_directions.add(e); e = new Directions(); e.setDirection(RIGHT);
+	 * e.setProbability(prob_next); e.setNextposition(10);
+	 * e.setOvershoot(false); vec_directions.add(e); e = new Directions();
+	 * e.setDirection(LEFT); e.setProbability(prob_stay); e.setNextposition(8);
+	 * e.setOvershoot(false); vec_directions.add(e); e = new Directions();
+	 * vec_States.add(new State(9, vec_directions, -0.02)); vec_directions = new
+	 * Vector<Directions>();
+	 * 
+	 * // STATE 10 - move up down, right,and nothing e.setDirection(UP);
+	 * e.setProbability(prob_next); e.setNextposition(6); e.setOvershoot(false);
+	 * vec_directions.add(e); e = new Directions(); e.setDirection(RIGHT);
+	 * e.setProbability(prob_stay); e.setNextposition(11);
+	 * e.setOvershoot(false); vec_directions.add(e); e = new Directions();
+	 * e.setDirection(LEFT); e.setProbability(prob_stay); e.setNextposition(9);
+	 * e.setOvershoot(false); vec_directions.add(e); e = new Directions();
+	 * vec_States.add(new State(10, vec_directions, -0.02)); vec_directions =
+	 * new Vector<Directions>();
+	 * 
+	 * // STATE 11 - move up down, right,and nothing e.setDirection(UP);
+	 * e.setProbability(prob_next); e.setNextposition(7); e.setOvershoot(false);
+	 * vec_directions.add(e); e = new Directions(); e.setDirection(LEFT);
+	 * e.setProbability(prob_stay); e.setNextposition(10);
+	 * e.setOvershoot(false); vec_directions.add(e); e = new Directions();
+	 * vec_States.add(new State(11, vec_directions, -0.02)); vec_directions =
+	 * new Vector<Directions>();
+	 * 
+	 * }
+	 * 
+	 */ private static void StartMDP(int iteration) {
 		// TODO Auto-generated method stub
 		Vector<Double> Vstar_line = new Vector<Double>();
 		Vector<String> Policy_star = new Vector<String>();
@@ -382,6 +247,7 @@ public class Main {
 
 		}
 
+		double gamma = 0;
 		if (leftexist) {
 			maxLeft = vec_States.get(i).getReward() + gamma * maxLeft;
 			max = Math.max(max, maxLeft);
@@ -511,7 +377,7 @@ public class Main {
 
 		LoseReward = -100;
 		GoalReward = 10;
-		gamma = 0.99;
+		// gamma = 0.99;
 
 		Vector<Directions> vec_directions = new Vector<Directions>();
 		Directions e = new Directions();
