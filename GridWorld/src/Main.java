@@ -12,11 +12,10 @@ public class Main {
 		PrintStates();
 
 		double gamma = 0.95;
-		int iterations = 100;
+		int iterations = 5000;
 		double alpha = 0.05;
 		double epsilon = 0.2;
 
-		// StartMDP(iterations);
 		new MDP(vec_States, iterations, gamma);
 	//	 new SARSA_Class(vec_States, gamma, iterations, alpha, epsilon);
 		// new Qlearning_class(vec_States, gamma, iterations, alpha, epsilon);
